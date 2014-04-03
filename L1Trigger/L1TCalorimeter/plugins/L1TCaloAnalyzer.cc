@@ -87,7 +87,8 @@ private:
 		  EG=0x3,
 		  Tau=0x4,
 		  Jet=0x5,
-		  Sum=0x6};
+		  Sum=0x6,
+      HSum=0x7};
   
   std::vector< ObjectType > types_;
   std::vector< std::string > typeStr_;
@@ -181,6 +182,7 @@ L1TCaloAnalyzer::L1TCaloAnalyzer(const edm::ParameterSet& iConfig)
   types_.push_back( Tau );
   types_.push_back( Jet );
   types_.push_back( Sum );
+  types_.push_back( HSum );
 
   typeStr_.push_back( "tower" );
   typeStr_.push_back( "cluster" );
@@ -188,6 +190,7 @@ L1TCaloAnalyzer::L1TCaloAnalyzer(const edm::ParameterSet& iConfig)
   typeStr_.push_back( "tau" );
   typeStr_.push_back( "jet" );
   typeStr_.push_back( "sum" );
+  typeStr_.push_back( "hsum" );
 
   vars_.push_back( "et" );
   bins_["et"].push_back(2000.);
@@ -362,25 +365,25 @@ L1TCaloAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
     }
     if(itr->getType() == l1t::EtSum::EtSumType::kMissingEt && l1S1EtMiss->size()>0 ){
       het2_.at(Sum)->Fill( itr->hwPt() );
-      h2d_["met_l1_stage1"]->Fill( l1S1EtMiss->at(0).etMiss(), (1.0/511.0)*itr->hwPt() );
-      h2d_["met_gen"]->Fill( genMet->at(0).et(), (1.0/511.0)*itr->hwPt() );
+      h2d_["met_l1_stage1"]->Fill( l1S1EtMiss->at(0).etMiss(), (1.0/1022.0)*itr->hwPt() );
+      h2d_["met_gen"]->Fill( genMet->at(0).et(), (1.0/1022.0)*itr->hwPt() );
       heta_.at(Sum)->Fill( itr->hwEta() );
       hphi_.at(Sum)->Fill( itr->hwPhi() );
-      h2d_["met_phi_l1_stage1"]->Fill( l1S1EtMiss->at(0).phi(), iPhitoPhi(itr->hwPhi()) );
-      h2d_["met_phi_gen"]->Fill( genMet->at(0).phi(), iPhitoPhi(itr->hwPhi()) );
+      h2d_["met_phi_l1_stage1"]->Fill( l1S1EtMiss->at(0).phi(), -1.0*iPhitoPhi(itr->hwPhi()) );
+      h2d_["met_phi_gen"]->Fill( genMet->at(0).phi(), -1.0*iPhitoPhi(itr->hwPhi()) );
     }
     if(itr->getType() == l1t::EtSum::EtSumType::kTotalHt && l1S1HtMiss->size()>0 ){
-      het_.at(Sum)->Fill( itr->hwPt() );
+      het_.at(HSum)->Fill( itr->hwPt() );
       h2d_["ht_l1_stage1"]->Fill( l1S1HtMiss->at(0).etTotal(), 0.5*itr->hwPt() );
       //h2d_["ht_gen"]->Fill( genMHt->at(0).sumEt(), 0.5*itr->hwPt() );
     }
     if(itr->getType() == l1t::EtSum::EtSumType::kMissingHt && l1S1HtMiss->size()>0 ){
-      het2_.at(Sum)->Fill( itr->hwPt() );
-      h2d_["mht_l1_stage1"]->Fill( l1S1HtMiss->at(0).etMiss(), (1.0/511.0)*itr->hwPt() );
+      het2_.at(HSum)->Fill( itr->hwPt() );
+      h2d_["mht_l1_stage1"]->Fill( l1S1HtMiss->at(0).etMiss(), (1.0/1022.0)*itr->hwPt() );
       //h2d_["mht_gen"]->Fill( genMht->at(0).et(), (1.0/511.0)*itr->hwPt() );
-      heta_.at(Sum)->Fill( itr->hwEta() );
-      hphi_.at(Sum)->Fill( itr->hwPhi() );
-      h2d_["mht_phi_l1_stage1"]->Fill( l1S1HtMiss->at(0).phi(), iPhitoPhi(itr->hwPhi()) );
+      heta_.at(HSum)->Fill( itr->hwEta() );
+      hphi_.at(HSum)->Fill( itr->hwPhi() );
+      h2d_["mht_phi_l1_stage1"]->Fill( l1S1HtMiss->at(0).phi(), -1.0*iPhitoPhi(itr->hwPhi()) );
       //h2d_["mht_phi_gen"]->Fill( genMht->at(0).phi(), iPhitoPhi(itr->hwPhi()) );
     }
 
@@ -545,7 +548,7 @@ L1TCaloAnalyzer::beginJob()
     for(auto lvlIt = varLevel_.cbegin(); lvlIt!= varLevel_.end(); ++lvlIt){
       for(auto varIt = vars_.cbegin(); varIt!=vars_.end(); ++varIt){
 
-        h2d_[*catIt+"_"+*lvlIt+"_"+*varIt] = jetDirs_.at(*catIt).make<TH2F>(*varIt+"_"+*lvlIt, *catIt+"_"+*lvlIt+"_"+*varIt, 
+        h2d_[*catIt+"_"+*lvlIt+"_"+*varIt] = jetDirs_.at(*catIt).make<TH2F>(*varIt+"_"+*lvlIt, *catIt+"_"+*varIt+";"+*lvlIt+";new l1", 
             (int)bins_.at("real_"+*varIt)[0],bins_.at("real_"+*varIt)[1],bins_.at("real_"+*varIt)[2],
             (int)bins_.at("real_"+*varIt)[0],bins_.at("real_"+*varIt)[1],bins_.at("real_"+*varIt)[2]);
 
@@ -560,7 +563,7 @@ L1TCaloAnalyzer::beginJob()
   for(auto lvlIt = eSumCategories_.cbegin(); lvlIt!= eSumCategories_.end(); ++lvlIt){
 
     for(auto varIt = varLevel_.cbegin(); varIt!=varLevel_.end(); ++varIt){
-      h2d_[*lvlIt+"_"+*varIt] = jetDirs_["eSums"].make<TH2F>(*lvlIt+"_"+*varIt, *lvlIt+"_"+*varIt, 
+      h2d_[*lvlIt+"_"+*varIt] = jetDirs_["eSums"].make<TH2F>(*lvlIt+"_"+*varIt, *lvlIt+";"+*varIt+";new l1", 
           (int)binsESum_.at(*lvlIt)[0],binsESum_.at(*lvlIt)[1],binsESum_.at(*lvlIt)[2],
           (int)binsESum_.at(*lvlIt)[0],binsESum_.at(*lvlIt)[1],binsESum_.at(*lvlIt)[2]);
     }
