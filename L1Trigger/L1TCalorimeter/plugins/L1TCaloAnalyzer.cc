@@ -19,6 +19,7 @@
 
 // system include files
 #include <memory>
+#include <algorithm>
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -131,6 +132,9 @@ private:
 // static data member definitions
 //My own function
 //
+bool L1JetRankDescending ( l1extra::L1JetParticle jet1, l1extra::L1JetParticle jet2 ){ return ( jet1.p4().Pt() > jet2.p4().Pt() ); }
+bool GenJetRankDescending ( reco::GenJet jet1, reco::GenJet jet2 ){ return ( jet1.p4().Pt() > jet2.p4().Pt() ); }
+
 const double PI = acos(-1.0);
 int PhitoiPhi(double phiMissingEt){
   int intPhiMissingEt;
@@ -337,6 +341,13 @@ L1TCaloAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
   Handle< std::vector<l1extra::L1EtMissParticle> > l1S1HtMiss;
   iEvent.getByLabel("l1extraParticles","MHT",l1S1HtMiss);
 
+  Handle< std::vector<reco::GenMET> > genMet;
+  iEvent.getByLabel("genMetCalo", genMet);
+
+  // get l1 sums
+  Handle< BXVector<l1t::EtSum> > sums;
+  iEvent.getByToken(m_sumToken,sums);
+
   //Get the l1 jets in the central region
   Handle< std::vector<l1extra::L1JetParticle> > l1GctJet;
   iEvent.getByLabel("l1extraParticles","Central", l1GctJet);
@@ -345,12 +356,25 @@ L1TCaloAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
   Handle< std::vector<reco::GenJet> > genJet;
   iEvent.getByLabel("ak4GenJets", genJet);
 
-  Handle< std::vector<reco::GenMET> > genMet;
-  iEvent.getByLabel("genMetCalo", genMet);
+  //Make vectors of jets that are within eta of 3
 
-  // get l1 sums
-  Handle< BXVector<l1t::EtSum> > sums;
-  iEvent.getByToken(m_sumToken,sums);
+  std::vector< l1extra::L1JetParticle > centralL1GctJet;
+  std::vector< reco::GenJet > centralGenJet;
+
+  for(auto itr = l1GctJet->begin(); itr != l1GctJet->end(); itr++){
+    if(fabs(itr->eta()) > 3.0) continue;
+    centralL1GctJet.push_back(*itr);
+  }
+
+  for(auto itr = genJet->begin(); itr != genJet->end(); itr++){
+    if(fabs(itr->eta()) > 3.0) continue;
+    centralGenJet.push_back(*itr);
+  }
+
+  //Sort the jets to make sure they're in energy order
+
+  std::sort( centralL1GctJet.begin(), centralL1GctJet.end(),  L1JetRankDescending );
+  std::sort( centralGenJet.begin(), centralGenJet.end(),  GenJetRankDescending );
 
 
   //Make the histograms
@@ -455,45 +479,45 @@ L1TCaloAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
     hjets_["lead_jet_et"]->Fill( leadEt );
     hjets_["lead_jet_eta"]->Fill( leadEta );
     hjets_["lead_jet_phi"]->Fill( leadPhi );
-    if(l1GctJet->size()>0){
-      h2d_["lead_jet_l1_stage1_et"]->Fill( l1GctJet->at(0).pt(),0.5*leadEt );
-      h2d_["lead_jet_l1_stage1_eta"]->Fill( l1GctJet->at(0).eta(), iEtatoEta(leadEta) );
-      h2d_["lead_jet_l1_stage1_phi"]->Fill( l1GctJet->at(0).phi(), iPhitoPhi(leadPhi) );
+    if(centralL1GctJet.size()>0){
+      h2d_["lead_jet_l1_stage1_et"]->Fill( centralL1GctJet.at(0).pt(),0.5*leadEt );
+      h2d_["lead_jet_l1_stage1_eta"]->Fill( centralL1GctJet.at(0).eta(), iEtatoEta(leadEta) );
+      h2d_["lead_jet_l1_stage1_phi"]->Fill( centralL1GctJet.at(0).phi(), iPhitoPhi(leadPhi) );
     }
-    if(genJet->size()>0){
-      h2d_["lead_jet_gen_et"]->Fill( genJet->at(0).pt(),0.5*leadEt );
-      h2d_["lead_jet_gen_eta"]->Fill( genJet->at(0).eta(), iEtatoEta(leadEta) );
-      h2d_["lead_jet_gen_phi"]->Fill( genJet->at(0).phi(), iPhitoPhi(leadPhi) );
+    if(centralGenJet.size()>0){
+      h2d_["lead_jet_gen_et"]->Fill( centralGenJet.at(0).pt(),0.5*leadEt );
+      h2d_["lead_jet_gen_eta"]->Fill( centralGenJet.at(0).eta(), iEtatoEta(leadEta) );
+      h2d_["lead_jet_gen_phi"]->Fill( centralGenJet.at(0).phi(), iPhitoPhi(leadPhi) );
     }
   }
   if(secondEt>0.01){
     hjets_["second_jet_et"]->Fill( secondEt );
     hjets_["second_jet_eta"]->Fill( secondEta );
     hjets_["second_jet_phi"]->Fill( secondPhi );
-    if(l1GctJet->size()>1){
-      h2d_["second_jet_l1_stage1_et"]->Fill( l1GctJet->at(1).pt(),0.5*secondEt );
-      h2d_["second_jet_l1_stage1_eta"]->Fill( l1GctJet->at(1).eta(), iEtatoEta(secondEta) );
-      h2d_["second_jet_l1_stage1_phi"]->Fill( l1GctJet->at(1).phi(), iPhitoPhi(secondPhi) );
+    if(centralL1GctJet.size()>1){
+      h2d_["second_jet_l1_stage1_et"]->Fill( centralL1GctJet.at(1).pt(),0.5*secondEt );
+      h2d_["second_jet_l1_stage1_eta"]->Fill( centralL1GctJet.at(1).eta(), iEtatoEta(secondEta) );
+      h2d_["second_jet_l1_stage1_phi"]->Fill( centralL1GctJet.at(1).phi(), iPhitoPhi(secondPhi) );
     }
-    if(genJet->size()>1){
-      h2d_["second_jet_gen_eta"]->Fill( genJet->at(1).eta(), iEtatoEta(secondEta) );
-      h2d_["second_jet_gen_et"]->Fill( genJet->at(1).pt(),0.5*secondEt );
-      h2d_["second_jet_gen_phi"]->Fill( genJet->at(1).phi(), iPhitoPhi(secondPhi) );
+    if(centralGenJet.size()>1){
+      h2d_["second_jet_gen_eta"]->Fill( centralGenJet.at(1).eta(), iEtatoEta(secondEta) );
+      h2d_["second_jet_gen_et"]->Fill( centralGenJet.at(1).pt(),0.5*secondEt );
+      h2d_["second_jet_gen_phi"]->Fill( centralGenJet.at(1).phi(), iPhitoPhi(secondPhi) );
     }
   }
   if(thirdEt>0.01){
     hjets_["third_jet_et"]->Fill( thirdEt );
     hjets_["third_jet_eta"]->Fill( thirdEta );
     hjets_["third_jet_phi"]->Fill( thirdPhi );
-    if(l1GctJet->size()>2){
-      h2d_["third_jet_l1_stage1_et"]->Fill( l1GctJet->at(2).pt(),0.5*thirdEt );
-      h2d_["third_jet_l1_stage1_eta"]->Fill( l1GctJet->at(2).eta(), iEtatoEta(thirdEta) );
-      h2d_["third_jet_l1_stage1_phi"]->Fill( l1GctJet->at(2).phi(), iPhitoPhi(thirdPhi) );
+    if(centralL1GctJet.size()>2){
+      h2d_["third_jet_l1_stage1_et"]->Fill( centralL1GctJet.at(2).pt(),0.5*thirdEt );
+      h2d_["third_jet_l1_stage1_eta"]->Fill( centralL1GctJet.at(2).eta(), iEtatoEta(thirdEta) );
+      h2d_["third_jet_l1_stage1_phi"]->Fill( centralL1GctJet.at(2).phi(), iPhitoPhi(thirdPhi) );
     }
-    if(genJet->size()>2){
-      h2d_["third_jet_gen_eta"]->Fill( genJet->at(2).eta(), iEtatoEta(thirdEta) );
-      h2d_["third_jet_gen_et"]->Fill( genJet->at(2).pt(),0.5*thirdEt );
-      h2d_["third_jet_gen_phi"]->Fill( genJet->at(2).phi(), iPhitoPhi(thirdPhi) );
+    if(centralGenJet.size()>2){
+      h2d_["third_jet_gen_eta"]->Fill( centralGenJet.at(2).eta(), iEtatoEta(thirdEta) );
+      h2d_["third_jet_gen_et"]->Fill( centralGenJet.at(2).pt(),0.5*thirdEt );
+      h2d_["third_jet_gen_phi"]->Fill( centralGenJet.at(2).phi(), iPhitoPhi(thirdPhi) );
     }
   }
 
