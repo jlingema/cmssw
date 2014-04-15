@@ -77,6 +77,7 @@ private:
   
   // ----------member data ---------------------------
   edm::EDGetToken m_towerToken;
+  edm::EDGetToken m_towerPreCompressionToken;
   edm::EDGetToken m_clusterToken;
   edm::EDGetToken m_egToken;
   edm::EDGetToken m_tauToken;
@@ -84,12 +85,13 @@ private:
   edm::EDGetToken m_sumToken;
   
   enum ObjectType{Tower=0x1,
-		  Cluster=0x2,
-		  EG=0x3,
-		  Tau=0x4,
-		  Jet=0x5,
-		  Sum=0x6,
-      HSum=0x7};
+      TowerPreCompression=0x2,
+		  Cluster=0x3,
+		  EG=0x4,
+		  Tau=0x5,
+		  Jet=0x6,
+		  Sum=0x7,
+      HSum=0x8};
   
   std::vector< ObjectType > types_;
   std::vector< std::string > typeStr_;
@@ -116,7 +118,9 @@ private:
   std::map< TString, TH2F* > h2d_;
 
   //Turn on curves
-  std::map< TString, TGraphAsymmErrors > gTurnon_;
+  std::map< TString, TGraphAsymmErrors* > gTurnons_;
+  std::map< TString, TH1F* > h1dTurnons_;
+  std::vector< TString > turnonCuts_;
 
   //Resolution histograms
   std::map< TString, TH1F* > hResolution_;
@@ -174,6 +178,7 @@ L1TCaloAnalyzer::L1TCaloAnalyzer(const edm::ParameterSet& iConfig)
 
   // register what you consume and keep token for later access:
   m_towerToken   = consumes<l1t::CaloTowerBxCollection>  (iConfig.getParameter<edm::InputTag>("towerToken"));
+  m_towerPreCompressionToken   = consumes<l1t::CaloTowerBxCollection>  (iConfig.getParameter<edm::InputTag>("towerPreCompressionToken"));
   m_clusterToken = consumes<l1t::CaloClusterBxCollection>(iConfig.getParameter<edm::InputTag>("clusterToken"));
   m_egToken      = consumes<l1t::EGammaBxCollection>     (iConfig.getParameter<edm::InputTag>("egToken"));
   m_tauToken     = consumes<l1t::TauBxCollection>        (iConfig.getParameter<edm::InputTag>("tauToken"));
@@ -181,6 +186,7 @@ L1TCaloAnalyzer::L1TCaloAnalyzer(const edm::ParameterSet& iConfig)
   m_sumToken     = consumes<l1t::EtSumBxCollection>      (iConfig.getParameter<edm::InputTag>("etSumToken"));
 
   types_.push_back( Tower );
+  types_.push_back( TowerPreCompression );
   types_.push_back( Cluster );
   types_.push_back( EG );
   types_.push_back( Tau );
@@ -189,6 +195,7 @@ L1TCaloAnalyzer::L1TCaloAnalyzer(const edm::ParameterSet& iConfig)
   types_.push_back( HSum );
 
   typeStr_.push_back( "tower" );
+  typeStr_.push_back( "towerPreCompression" );
   typeStr_.push_back( "cluster" );
   typeStr_.push_back( "eg" );
   typeStr_.push_back( "tau" );
@@ -197,7 +204,7 @@ L1TCaloAnalyzer::L1TCaloAnalyzer(const edm::ParameterSet& iConfig)
   typeStr_.push_back( "hsum" );
 
   vars_.push_back( "et" );
-  bins_["et"].push_back(2000.);
+  bins_["et"].push_back(200.);
   bins_["et"].push_back(-0.5);
   bins_["et"].push_back(1999.5);
   vars_.push_back( "eta" );
@@ -214,7 +221,7 @@ L1TCaloAnalyzer::L1TCaloAnalyzer(const edm::ParameterSet& iConfig)
   bins_["real_eta"].push_back(70.);
   bins_["real_eta"].push_back(-3.3);
   bins_["real_eta"].push_back(3.3);
-  bins_["real_et"].push_back(2000.);
+  bins_["real_et"].push_back(200.);
   bins_["real_et"].push_back(-0.5);
   bins_["real_et"].push_back(1999.5);
 
@@ -227,11 +234,11 @@ L1TCaloAnalyzer::L1TCaloAnalyzer(const edm::ParameterSet& iConfig)
   varLevel_.push_back( "l1_stage1" );
 
   eSumCategories_.push_back( "et" );
-  binsESum_["et"].push_back(2000.);
+  binsESum_["et"].push_back(200.);
   binsESum_["et"].push_back(-0.5);
   binsESum_["et"].push_back(1999.5);
   eSumCategories_.push_back( "met" );
-  binsESum_["met"].push_back(2000.);
+  binsESum_["met"].push_back(200.);
   binsESum_["met"].push_back(-0.5);
   binsESum_["met"].push_back(1999.5);
   eSumCategories_.push_back( "met_phi" );
@@ -240,11 +247,11 @@ L1TCaloAnalyzer::L1TCaloAnalyzer(const edm::ParameterSet& iConfig)
   binsESum_["met_phi"].push_back(3.15);
   
   eSumCategories_.push_back( "ht" );
-  binsESum_["ht"].push_back(2000.);
+  binsESum_["ht"].push_back(200.);
   binsESum_["ht"].push_back(-0.5);
   binsESum_["ht"].push_back(1999.5);
   eSumCategories_.push_back( "mht" );
-  binsESum_["mht"].push_back(2000.);
+  binsESum_["mht"].push_back(200.);
   binsESum_["mht"].push_back(-0.5);
   binsESum_["mht"].push_back(1999.5);
   eSumCategories_.push_back( "mht_phi" );
@@ -252,6 +259,13 @@ L1TCaloAnalyzer::L1TCaloAnalyzer(const edm::ParameterSet& iConfig)
   binsESum_["mht_phi"].push_back(-3.15);
   binsESum_["mht_phi"].push_back(3.15);
 
+  turnonCuts_.push_back("0");
+  turnonCuts_.push_back("30");
+  turnonCuts_.push_back("40");
+  turnonCuts_.push_back("50");
+  turnonCuts_.push_back("100");
+  turnonCuts_.push_back("200");
+  turnonCuts_.push_back("400");
 
 }
 
@@ -293,6 +307,19 @@ L1TCaloAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
     hem_.at(Tower)->Fill( itr->hwEtEm() );
     hhad_.at(Tower)->Fill( itr->hwEtHad() );
     hratio_.at(Tower)->Fill( itr->hwEtRatio() );
+  }
+
+  // get towers pre compression
+  Handle< BXVector<l1t::CaloTower> > towersPreCompression;
+  iEvent.getByToken(m_towerPreCompressionToken,towersPreCompression);
+
+  for ( auto itr = towersPreCompression->begin(0); itr != towersPreCompression->end(0); ++itr ) {
+    het_.at(TowerPreCompression)->Fill( itr->hwPt() );
+    heta_.at(TowerPreCompression)->Fill( itr->hwEta() );
+    hphi_.at(TowerPreCompression)->Fill( itr->hwPhi() );
+    hem_.at(TowerPreCompression)->Fill( itr->hwEtEm() );
+    hhad_.at(TowerPreCompression)->Fill( itr->hwEtHad() );
+    hratio_.at(TowerPreCompression)->Fill( itr->hwEtRatio() );
   }
 
   // get cluster
@@ -384,17 +411,33 @@ L1TCaloAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
     if(itr->getType() == l1t::EtSum::EtSumType::kTotalEt && l1S1EtMiss->size()>0){
       het_.at(Sum)->Fill( itr->hwPt() );
-      h2d_["et_l1_stage1"]->Fill( l1S1EtMiss->at(0).etTotal(), 0.5*itr->hwPt() );
-      h2d_["et_gen"]->Fill( genMet->at(0).sumEt(), 0.5*itr->hwPt() );
+
+      double realEt=0.5*itr->hwPt();
+
+      h2d_["et_l1_stage1"]->Fill( l1S1EtMiss->at(0).etTotal(), realEt );
+      h2d_["et_gen"]->Fill( genMet->at(0).sumEt(), realEt );
+
+      //For the turnons
+      for(auto cut=turnonCuts_.begin(); cut!=turnonCuts_.end();cut++ ){
+        if(realEt > atof(cut->Data())) h1dTurnons_.at("et_"+*cut)->Fill( genMet->at(0).sumEt() );
+      }
     }
     if(itr->getType() == l1t::EtSum::EtSumType::kMissingEt && l1S1EtMiss->size()>0 ){
       het2_.at(Sum)->Fill( itr->hwPt() );
-      h2d_["met_l1_stage1"]->Fill( l1S1EtMiss->at(0).etMiss(), (1.0/1022.0)*itr->hwPt() );
-      h2d_["met_gen"]->Fill( genMet->at(0).et(), (1.0/1022.0)*itr->hwPt() );
+      double realEt=(1.0/1022.0)*itr->hwPt();
+
+      h2d_["met_l1_stage1"]->Fill( l1S1EtMiss->at(0).etMiss(), realEt );
+      h2d_["met_gen"]->Fill( genMet->at(0).et(), realEt );
       heta_.at(Sum)->Fill( itr->hwEta() );
       hphi_.at(Sum)->Fill( itr->hwPhi() );
-      h2d_["met_phi_l1_stage1"]->Fill( l1S1EtMiss->at(0).phi(), -1.0*iPhitoPhi(itr->hwPhi()) );
-      h2d_["met_phi_gen"]->Fill( genMet->at(0).phi(), -1.0*iPhitoPhi(itr->hwPhi()) );
+      h2d_["met_phi_l1_stage1"]->Fill( l1S1EtMiss->at(0).phi(), iPhitoPhi(itr->hwPhi()) );
+      h2d_["met_phi_gen"]->Fill( genMet->at(0).phi(), iPhitoPhi(itr->hwPhi()) );
+
+      //For the turnons
+      for(auto cut=turnonCuts_.begin(); cut!=turnonCuts_.end();cut++ ){
+        if(realEt > atof(cut->Data())) h1dTurnons_.at("met_"+*cut)->Fill( genMet->at(0).et() );
+      }
+
     }
     if(itr->getType() == l1t::EtSum::EtSumType::kTotalHt && l1S1HtMiss->size()>0 ){
       het_.at(HSum)->Fill( itr->hwPt() );
@@ -489,6 +532,11 @@ L1TCaloAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       h2d_["lead_jet_gen_eta"]->Fill( centralGenJet.at(0).eta(), iEtatoEta(leadEta) );
       h2d_["lead_jet_gen_phi"]->Fill( centralGenJet.at(0).phi(), iPhitoPhi(leadPhi) );
     }
+    //For the turnons
+    leadEt = 0.5*leadEt;
+    for(auto cut=turnonCuts_.begin(); cut!=turnonCuts_.end();cut++ ){
+      if(leadEt > atof(cut->Data())) h1dTurnons_.at("lead_jet_"+*cut)->Fill( centralGenJet.at(0).pt() );
+    }
   }
   if(secondEt>0.01){
     hjets_["second_jet_et"]->Fill( secondEt );
@@ -503,6 +551,11 @@ L1TCaloAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       h2d_["second_jet_gen_eta"]->Fill( centralGenJet.at(1).eta(), iEtatoEta(secondEta) );
       h2d_["second_jet_gen_et"]->Fill( centralGenJet.at(1).pt(),0.5*secondEt );
       h2d_["second_jet_gen_phi"]->Fill( centralGenJet.at(1).phi(), iPhitoPhi(secondPhi) );
+    }
+    //For the turnons
+    secondEt = 0.5*secondEt;
+    for(auto cut=turnonCuts_.begin(); cut!=turnonCuts_.end();cut++ ){
+      if(secondEt > atof(cut->Data())) h1dTurnons_.at("second_jet_"+*cut)->Fill( centralGenJet.at(1).pt() );
     }
   }
   if(thirdEt>0.01){
@@ -519,6 +572,11 @@ L1TCaloAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
       h2d_["third_jet_gen_et"]->Fill( centralGenJet.at(2).pt(),0.5*thirdEt );
       h2d_["third_jet_gen_phi"]->Fill( centralGenJet.at(2).phi(), iPhitoPhi(thirdPhi) );
     }
+  }
+  //For the turnons
+  thirdEt = 0.5*thirdEt;
+  for(auto cut=turnonCuts_.begin(); cut!=turnonCuts_.end();cut++ ){
+    if(thirdEt > atof(cut->Data())) h1dTurnons_.at("third_jet_"+*cut)->Fill( centralGenJet.at(2).pt() );
   }
 
 }
@@ -543,13 +601,14 @@ L1TCaloAnalyzer::beginJob()
     heta_.insert( std::pair< ObjectType, TH1F* >(*itr, dirs_.at(*itr).make<TH1F>("eta", "", 70, -35., 35.) ));
     hphi_.insert( std::pair< ObjectType, TH1F* >(*itr, dirs_.at(*itr).make<TH1F>("phi", "", 72, 0., 72.) ));
 
-    if (*itr==Tower) {
-      hem_.insert( std::pair< ObjectType, TH1F* >(*itr, dirs_.at(*itr).make<TH1F>("em", "", 50, 0., 100.) ));
-      hhad_.insert( std::pair< ObjectType, TH1F* >(*itr, dirs_.at(*itr).make<TH1F>("had", "", 50, 0., 100.) ));
+    if (*itr==Tower || *itr==TowerPreCompression) {
+      hem_.insert( std::pair< ObjectType, TH1F* >(*itr, dirs_.at(*itr).make<TH1F>("em", "", 500, 0., 1000.) ));
+      hhad_.insert( std::pair< ObjectType, TH1F* >(*itr, dirs_.at(*itr).make<TH1F>("had", "", 500, 0., 1000.) ));
       hratio_.insert( std::pair< ObjectType, TH1F* >(*itr, dirs_.at(*itr).make<TH1F>("ratio", "", 10, 0., 10.) ));
     }
 
   }
+
 
   //Add histograms exclusively for jets, based on category and vars
 
@@ -596,8 +655,27 @@ L1TCaloAnalyzer::beginJob()
 
   std::cout << "3\n";
 
-  //Add turnon curves for the et of the jets
+  //Add turnon curves for the et of the jets, and energy sums
 
+
+  for(auto cut = turnonCuts_.cbegin(); cut!=turnonCuts_.end(); ++cut){
+
+    for(auto catIt = categories_.cbegin(); catIt!= categories_.end(); ++catIt){
+      h1dTurnons_[*catIt+"_"+*cut] = jetDirs_.at(*catIt).make<TH1F>(*catIt+"_cut"+*cut,*catIt+"_cut"+*cut,
+          bins_.at("real_et")[0], bins_.at("real_et")[1], bins_.at("real_et")[2]);
+      gTurnons_[*catIt+"_"+*cut] = jetDirs_.at(*catIt).make<TGraphAsymmErrors>();
+      gTurnons_[*catIt+"_"+*cut]->SetName(*catIt+"_turnon"+*cut);
+    }
+    h1dTurnons_["et_"+*cut] = jetDirs_.at("eSums").make<TH1F>("et_cut"+*cut,"et_cut"+*cut,
+        bins_.at("real_et")[0], bins_.at("real_et")[1], bins_.at("real_et")[2]);
+    gTurnons_["et_"+*cut] = jetDirs_.at("eSums").make<TGraphAsymmErrors>();
+    gTurnons_["et_"+*cut]->SetName("etTotal_turnon"+*cut);
+    h1dTurnons_["met_"+*cut] = jetDirs_.at("eSums").make<TH1F>("met_cut"+*cut,"met_cut"+*cut,
+        bins_.at("real_et")[0], bins_.at("real_et")[1], bins_.at("real_et")[2]);
+    gTurnons_["met_"+*cut] = jetDirs_.at("eSums").make<TGraphAsymmErrors>();
+    gTurnons_["met_"+*cut]->SetName("met_turnon"+*cut);
+
+  }
 
   //Add turnon curves for the met and et
 
@@ -607,6 +685,17 @@ L1TCaloAnalyzer::beginJob()
   void 
 L1TCaloAnalyzer::endJob() 
 {
+  //Fill the turnons
+  for(auto cut = turnonCuts_.cbegin(); cut!=turnonCuts_.end(); ++cut){
+
+    for(auto catIt = categories_.cbegin(); catIt!= categories_.end(); ++catIt){
+      gTurnons_[*catIt+"_"+*cut]->Divide(h1dTurnons_[*catIt+"_"+*cut], h1dTurnons_[*catIt+"_0"]);
+    }
+    gTurnons_["et_"+*cut]->Divide(h1dTurnons_["et_"+*cut], h1dTurnons_["et_0"]);
+    gTurnons_["met_"+*cut]->Divide(h1dTurnons_["met_"+*cut], h1dTurnons_["met_0"]);
+  }
+
+
 }
 
 // ------------ method called when starting to processes a run  ------------
