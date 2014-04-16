@@ -18,7 +18,7 @@ l1tStage2CaloParams = cms.ESProducer(
     towerNBitsE      = cms.int32(8),
     towerNBitsSum    = cms.int32(9),
     towerNBitsRatio  = cms.int32(3),
-    towerCompression = cms.bool(False),
+    towerCompression = cms.bool(True),
 
     # jets
     jetSeedThreshold = cms.double(5.)

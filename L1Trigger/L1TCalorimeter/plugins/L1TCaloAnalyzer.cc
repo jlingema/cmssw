@@ -121,6 +121,7 @@ private:
   std::map< TString, TGraphAsymmErrors* > gTurnons_;
   std::map< TString, TH1F* > h1dTurnons_;
   std::vector< TString > turnonCuts_;
+  std::vector< TString > turnonLevel_;
 
   //Resolution histograms
   std::map< TString, TH1F* > hResolution_;
@@ -259,6 +260,9 @@ L1TCaloAnalyzer::L1TCaloAnalyzer(const edm::ParameterSet& iConfig)
   binsESum_["mht_phi"].push_back(-3.15);
   binsESum_["mht_phi"].push_back(3.15);
 
+  turnonLevel_.push_back("stage1");
+  turnonLevel_.push_back("stage2");
+
   turnonCuts_.push_back("0");
   turnonCuts_.push_back("30");
   turnonCuts_.push_back("40");
@@ -321,6 +325,9 @@ L1TCaloAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
     hhad_.at(TowerPreCompression)->Fill( itr->hwEtHad() );
     hratio_.at(TowerPreCompression)->Fill( itr->hwEtRatio() );
   }
+
+  //Find the difference pre compression and post compression
+  
 
   // get cluster
   Handle< BXVector<l1t::CaloCluster> > clusters;
@@ -419,7 +426,8 @@ L1TCaloAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
       //For the turnons
       for(auto cut=turnonCuts_.begin(); cut!=turnonCuts_.end();cut++ ){
-        if(realEt > atof(cut->Data())) h1dTurnons_.at("et_"+*cut)->Fill( genMet->at(0).sumEt() );
+        if(realEt > atof(cut->Data())) h1dTurnons_.at("et_stage2_"+*cut)->Fill( genMet->at(0).sumEt() );
+        if(l1S1EtMiss->at(0).etTotal() > atof(cut->Data())) h1dTurnons_.at("et_stage1_"+*cut)->Fill( genMet->at(0).sumEt() );
       }
     }
     if(itr->getType() == l1t::EtSum::EtSumType::kMissingEt && l1S1EtMiss->size()>0 ){
@@ -435,7 +443,8 @@ L1TCaloAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
 
       //For the turnons
       for(auto cut=turnonCuts_.begin(); cut!=turnonCuts_.end();cut++ ){
-        if(realEt > atof(cut->Data())) h1dTurnons_.at("met_"+*cut)->Fill( genMet->at(0).et() );
+        if(realEt > atof(cut->Data())) h1dTurnons_.at("met_stage2_"+*cut)->Fill( genMet->at(0).et() );
+        if(l1S1EtMiss->at(0).etMiss() > atof(cut->Data())) h1dTurnons_.at("met_stage1_"+*cut)->Fill( genMet->at(0).et() );
       }
 
     }
@@ -535,7 +544,8 @@ L1TCaloAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
     //For the turnons
     leadEt = 0.5*leadEt;
     for(auto cut=turnonCuts_.begin(); cut!=turnonCuts_.end();cut++ ){
-      if(leadEt > atof(cut->Data())) h1dTurnons_.at("lead_jet_"+*cut)->Fill( centralGenJet.at(0).pt() );
+      if(leadEt > atof(cut->Data())) h1dTurnons_.at("lead_jet_stage2_"+*cut)->Fill( centralGenJet.at(0).pt() );
+      if(centralL1GctJeta.at(0).pt() > atof(cut->Data())) h1dTurnons_.at("lead_jet_stage1_"+*cut)->Fill( centralGenJet.at(0).pt() );
     }
   }
   if(secondEt>0.01){
@@ -555,7 +565,8 @@ L1TCaloAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
     //For the turnons
     secondEt = 0.5*secondEt;
     for(auto cut=turnonCuts_.begin(); cut!=turnonCuts_.end();cut++ ){
-      if(secondEt > atof(cut->Data())) h1dTurnons_.at("second_jet_"+*cut)->Fill( centralGenJet.at(1).pt() );
+      if(secondEt > atof(cut->Data())) h1dTurnons_.at("second_jet_stage2_"+*cut)->Fill( centralGenJet.at(1).pt() );
+      if(centralL1GctJeta.at(1).pt() > atof(cut->Data())) h1dTurnons_.at("second_jet_stage1_"+*cut)->Fill( centralGenJet.at(1).pt() );
     }
   }
   if(thirdEt>0.01){
@@ -576,7 +587,8 @@ L1TCaloAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
   //For the turnons
   thirdEt = 0.5*thirdEt;
   for(auto cut=turnonCuts_.begin(); cut!=turnonCuts_.end();cut++ ){
-    if(thirdEt > atof(cut->Data())) h1dTurnons_.at("third_jet_"+*cut)->Fill( centralGenJet.at(2).pt() );
+    if(thirdEt > atof(cut->Data())) h1dTurnons_.at("third_jet_stage2_"+*cut)->Fill( centralGenJet.at(2).pt() );
+    if(centralL1GctJeta.at(2).pt() > atof(cut->Data())) h1dTurnons_.at("third_jet_stage1_"+*cut)->Fill( centralGenJet.at(2).pt() );
   }
 
 }
@@ -659,22 +671,22 @@ L1TCaloAnalyzer::beginJob()
 
 
   for(auto cut = turnonCuts_.cbegin(); cut!=turnonCuts_.end(); ++cut){
-
-    for(auto catIt = categories_.cbegin(); catIt!= categories_.end(); ++catIt){
-      h1dTurnons_[*catIt+"_"+*cut] = jetDirs_.at(*catIt).make<TH1F>(*catIt+"_cut"+*cut,*catIt+"_cut"+*cut,
+    for(auto lvl = turnonLevel_.cbegin(); lvl!=turnonLevel_.end(); ++lvl){
+      for(auto catIt = categories_.cbegin(); catIt!= categories_.end(); ++catIt){
+        h1dTurnons_[*catIt+"_"+*lvl+"_"+*cut] = jetDirs_.at(*catIt).make<TH1F>(*catIt+"_"+*lvl+"_cut"+*cut,*catIt+"_"+*lvl"_cut"+*cut,
+            bins_.at("real_et")[0], bins_.at("real_et")[1], bins_.at("real_et")[2]);
+        gTurnons_[*catIt+"_"+*lvl"_"+*cut] = jetDirs_.at(*catIt).make<TGraphAsymmErrors>();
+        gTurnons_[*catIt+"_"+*lvl"_"+*cut]->SetName(*catIt+"_"+*lvl"_turnon"+*cut);
+      }
+      h1dTurnons_["et_"+*lvl+"_"+*cut] = jetDirs_.at("eSums").make<TH1F>("et_"+*lvl+"_cut"+*cut,"et_"+*lvl+"_cut"+*cut,
           bins_.at("real_et")[0], bins_.at("real_et")[1], bins_.at("real_et")[2]);
-      gTurnons_[*catIt+"_"+*cut] = jetDirs_.at(*catIt).make<TGraphAsymmErrors>();
-      gTurnons_[*catIt+"_"+*cut]->SetName(*catIt+"_turnon"+*cut);
+      gTurnons_["et_"+*lvl+"_"+*cut] = jetDirs_.at("eSums").make<TGraphAsymmErrors>();
+      gTurnons_["et_"+*lvl+"_"+*cut]->SetName("etTotal_"+*lvl+"_turnon"+*cut);
+      h1dTurnons_["met_"+*lvl+"_"+*cut] = jetDirs_.at("eSums").make<TH1F>("met_"+*lvl+"_cut"+*cut,"met_"+*lvl+"_cut"+*cut,
+          bins_.at("real_et")[0], bins_.at("real_et")[1], bins_.at("real_et")[2]);
+      gTurnons_["met_"+*lvl+"_"+*cut] = jetDirs_.at("eSums").make<TGraphAsymmErrors>();
+      gTurnons_["met_"+*lvl+"_"+*cut]->SetName("met_"+*lvl+"_turnon"+*cut);
     }
-    h1dTurnons_["et_"+*cut] = jetDirs_.at("eSums").make<TH1F>("et_cut"+*cut,"et_cut"+*cut,
-        bins_.at("real_et")[0], bins_.at("real_et")[1], bins_.at("real_et")[2]);
-    gTurnons_["et_"+*cut] = jetDirs_.at("eSums").make<TGraphAsymmErrors>();
-    gTurnons_["et_"+*cut]->SetName("etTotal_turnon"+*cut);
-    h1dTurnons_["met_"+*cut] = jetDirs_.at("eSums").make<TH1F>("met_cut"+*cut,"met_cut"+*cut,
-        bins_.at("real_et")[0], bins_.at("real_et")[1], bins_.at("real_et")[2]);
-    gTurnons_["met_"+*cut] = jetDirs_.at("eSums").make<TGraphAsymmErrors>();
-    gTurnons_["met_"+*cut]->SetName("met_turnon"+*cut);
-
   }
 
   //Add turnon curves for the met and et
@@ -687,14 +699,15 @@ L1TCaloAnalyzer::endJob()
 {
   //Fill the turnons
   for(auto cut = turnonCuts_.cbegin(); cut!=turnonCuts_.end(); ++cut){
+    for(auto lvl = turnonLevel_.cbegin(); lvl!=turnonLevel_.end(); ++lvl){
 
-    for(auto catIt = categories_.cbegin(); catIt!= categories_.end(); ++catIt){
-      gTurnons_[*catIt+"_"+*cut]->Divide(h1dTurnons_[*catIt+"_"+*cut], h1dTurnons_[*catIt+"_0"]);
+      for(auto catIt = categories_.cbegin(); catIt!= categories_.end(); ++catIt){
+        gTurnons_[*catIt+"_"+*lvl+"_"+*cut]->Divide(h1dTurnons_[*catIt+"_"+*lvl+"_"+*cut], h1dTurnons_[*catIt+"_"+*lvl+"_0"]);
+      }
+      gTurnons_["et_"+*lvl+"_"+*cut]->Divide(h1dTurnons_["et_"+*lvl+"_"+*cut], h1dTurnons_["et_"+*lvl+"_0"]);
+      gTurnons_["met_"+*lvl+"_"+*cut]->Divide(h1dTurnons_["met_"+*lvl+"_"+*cut], h1dTurnons_["met_"+*lvl+"_0"]);
     }
-    gTurnons_["et_"+*cut]->Divide(h1dTurnons_["et_"+*cut], h1dTurnons_["et_0"]);
-    gTurnons_["met_"+*cut]->Divide(h1dTurnons_["met_"+*cut], h1dTurnons_["met_0"]);
   }
-
 
 }
 
