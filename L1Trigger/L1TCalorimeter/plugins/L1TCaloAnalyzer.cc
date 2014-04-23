@@ -710,7 +710,6 @@ L1TCaloAnalyzer::beginJob()
   h1d_["tow_had_diff"]=jetDirs_.at("compression_comp").make<TH1F>("tow_had_diff",
       "Tower had (after - before) compression;(after-before) [L1 units];",200,-300.,300.);
 
-  std::cout << "1\n";
   //Add 2d histograms for comparison for the jets, based on var and var level
 
 
@@ -726,7 +725,6 @@ L1TCaloAnalyzer::beginJob()
     }
   }
 
-  std::cout << "2\n";
   //Add 2d histograms for the energy sums
 
   jetDirs_["eSums"] = fs->mkdir("eSums");
@@ -740,7 +738,6 @@ L1TCaloAnalyzer::beginJob()
 
   }
 
-  std::cout << "3\n";
 
   //Add turnon curves for the et of the jets, and energy sums
 
