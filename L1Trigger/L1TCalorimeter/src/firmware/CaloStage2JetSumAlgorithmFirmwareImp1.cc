@@ -38,11 +38,10 @@ void l1t::CaloStage2JetSumAlgorithmFirmwareImp1::processEvent(const std::vector<
    int32_t intPhiMissingHt;
    const float pi = acos(-1.); 
    float jetPhi;
-
    for(size_t jetNr=0;jetNr<jets.size();jetNr++)
    {
       if (abs(jets[jetNr].hwEta()) > 28) continue;
-      if (jets[jetNr].hwPt() < 0) continue;
+      if (jets[jetNr].hwPt() < 80) continue;
 
       ptJet = (jets[jetNr]).hwPt();
       jetPhi=((jets[jetNr]).hwPhi()*5.0-2.5)*pi/180.;

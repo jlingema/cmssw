@@ -468,12 +468,14 @@ L1TCaloAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup
     }
     if(itr->getType() == l1t::EtSum::EtSumType::kTotalHt){
       het_.at(HSum)->Fill( itr->hwPt() );
+      std::cout <<"HT" << itr->hwPt() << std::endl;
       L1TCaloAnalyzer::make_cumu_hist(itr->hwPt(), hrateEt_.at(HSum));
       if (l1S1HtMiss->size()>0) h2d_["ht_l1_stage1"]->Fill( l1S1HtMiss->at(0).etTotal(), 0.5*itr->hwPt() );
       //h2d_["ht_gen"]->Fill( genMHt->at(0).sumEt(), 0.5*itr->hwPt() );
     }
     if(itr->getType() == l1t::EtSum::EtSumType::kMissingHt){
       hmet_.at(HSum)->Fill( itr->hwPt() );
+      std::cout <<"MHT" << itr->hwPt() << std::endl;
       L1TCaloAnalyzer::make_cumu_hist(itr->hwPt(), hrateMet_.at(HSum));
       if(l1S1HtMiss->size()>0)      h2d_["mht_l1_stage1"]->Fill( l1S1HtMiss->at(0).etMiss(), (1.0/1022.0)*itr->hwPt() );
       //h2d_["mht_gen"]->Fill( genMht->at(0).et(), (1.0/511.0)*itr->hwPt() );
@@ -688,8 +690,8 @@ L1TCaloAnalyzer::beginJob()
 
     dirs_.insert( std::pair< ObjectType, TFileDirectory >(*itr, fs->mkdir(*str) ) );
 
-    het_.insert( std::pair< ObjectType, TH1F* >(*itr, dirs_.at(*itr).make<TH1F>("et", "Full ET;ET [l1 units];", 2000, 0., 4000.) ));
-    hrateEt_.insert( std::pair< ObjectType, TH1F* >(*itr, dirs_.at(*itr).make<TH1F>("et rate", "Full ET;ET [l1 units];", 2000, 0., 4000.) ));
+    het_.insert( std::pair< ObjectType, TH1F* >(*itr, dirs_.at(*itr).make<TH1F>("et", "Full ET;ET [l1 units];", 4000, 0., 8000.) ));
+    hrateEt_.insert( std::pair< ObjectType, TH1F* >(*itr, dirs_.at(*itr).make<TH1F>("et rate", "Full ET;ET [l1 units];", 4000, 0., 8000.) ));
     hmet_.insert( std::pair< ObjectType, TH1F* >(*itr, dirs_.at(*itr).make<TH1F>("met", "MET;MET [l1 units];", 5000, -10., 99990.) ));
     hrateMet_.insert( std::pair< ObjectType, TH1F* >(*itr, dirs_.at(*itr).make<TH1F>("met rate", "MET;MET [l1 units];", 5000, -10., 99990.) ));
     heta_.insert( std::pair< ObjectType, TH1F* >(*itr, dirs_.at(*itr).make<TH1F>("eta", "Eta;Eta [l1 units];", 70, -35., 35.) ));
