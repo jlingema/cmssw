@@ -83,6 +83,7 @@ L1TCaloParamsESProducer::L1TCaloParamsESProducer(const edm::ParameterSet& conf)
   m_params.setTowerCompression(conf.getParameter<bool>("towerCompression"));
 
   m_params.setJetSeedThreshold(conf.getParameter<double>("jetSeedThreshold"));
+  m_params.setDoDonutSubtraction(conf.getParameter<bool>("doDonutSubtraction"));
 
 }
 

@@ -27,7 +27,7 @@ namespace l1t {
 			      std::vector<Jet> & jets);
 
     void create(const std::vector<CaloTower> & towers,
-		std::vector<Jet> & jets);
+		std::vector<Jet> & jets, bool doDonutSubtraction=false);
     
     void filter(std::vector<Jet> & jets);
     
@@ -35,40 +35,13 @@ namespace l1t {
 
     bool jetIsZero(l1t::Jet jet);
 
-  private:
-
-    CaloParams* const params_;
-    
-  };
-
-  // Imp2 is Jad's algorithm with possible donut subtraction
-  class CaloStage2JetAlgorithmFirmwareImp2 : public CaloStage2JetAlgorithm {
-  public:
-    CaloStage2JetAlgorithmFirmwareImp2(CaloParams* params);
-    virtual ~CaloStage2JetAlgorithmFirmwareImp2();
-    virtual void processEvent(const std::vector<CaloTower> & towers,
-			      std::vector<Jet> & jets);
-
-    void create(const std::vector<CaloTower> & towers,
-		std::vector<Jet> & jets);
-
-    void getRing(int32_t shift, std::vector<std::vector<int> > & ring, 
-        const std::vector<CaloTower> & towers, std::vector<Jet> & jets);
-    
-    void filter(std::vector<Jet> & jets);
-    
-    void sort(std::vector<Jet> & jets);
-
-    bool jetIsZero(l1t::Jet jet);
+    void pusRing(int jetEta, int jetPhi, int size, std::vector<int>& ring, 
+        const std::vector<l1t::CaloTower> & towers);
 
   private:
 
     CaloParams* const params_;
-    int etaMin_ = -27;
-    int etaMax_ = 27;
-    int phiMin_ = 1;
-    int phiMax_ = 72;
-    
+
   };
 
 }

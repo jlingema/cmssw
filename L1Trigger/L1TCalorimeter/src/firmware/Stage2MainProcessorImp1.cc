@@ -32,7 +32,7 @@ l1t::Stage2MainProcessorFirmwareImp1::Stage2MainProcessorFirmwareImp1(const Firm
   m_tauClusterAlgo = new CaloStage2ClusterAlgorithmFirmwareImp1(m_params, 
 								CaloStage2ClusterAlgorithmFirmwareImp1::ClusterInput::EH);
   m_tauAlgo = new CaloStage2TauAlgorithmFirmwareImp1(m_params);
-  m_jetAlgo = new CaloStage2JetAlgorithmFirmwareImp2(m_params);
+  m_jetAlgo = new CaloStage2JetAlgorithmFirmwareImp1(m_params);
   m_sumAlgo = new CaloStage2EtSumAlgorithmFirmwareImp1(m_params);
   m_jetSumAlgo = new CaloStage2JetSumAlgorithmFirmwareImp1(m_params);
   
@@ -68,9 +68,7 @@ void l1t::Stage2MainProcessorFirmwareImp1::processEvent(const std::vector<l1t::C
   m_egAlgo->processEvent( egClusters, outTowers, egammas );
   m_egClusterAlgo->processEvent( outTowers, tauClusters );
   m_tauAlgo->processEvent( tauClusters, taus );
-  m_jetAlgo->processEvent( outTowers, jets );
-  std::vector<std::vector<int> > bla;
-  m_jetAlgo->getRing( 5, bla,outTowers, jets );
+  m_jetAlgo->processEvent( outTowers, jets ); 
   m_sumAlgo->processEvent( outTowers, towerSums );
   m_jetSumAlgo->processEvent( jets, jetSums );  
 

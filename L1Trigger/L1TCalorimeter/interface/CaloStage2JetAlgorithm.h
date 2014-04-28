@@ -29,8 +29,6 @@ namespace l1t {
 
     virtual ~CaloStage2JetAlgorithm(){};
 
-    virtual void getRing(int32_t shift,std::vector<std::vector<int> >& ring, 
-        const std::vector<l1t::CaloTower> & towers, std::vector<l1t::Jet> & jets){};
   }; 
   
 } 
