@@ -688,8 +688,8 @@ L1TCaloAnalyzer::beginJob()
 
     dirs_.insert( std::pair< ObjectType, TFileDirectory >(*itr, fs->mkdir(*str) ) );
 
-    het_.insert( std::pair< ObjectType, TH1F* >(*itr, dirs_.at(*itr).make<TH1F>("et", "Full ET;ET [l1 units];", 1000, 0., 2000.) ));
-    hrateEt_.insert( std::pair< ObjectType, TH1F* >(*itr, dirs_.at(*itr).make<TH1F>("et rate", "Full ET;ET [l1 units];", 1000, 0., 2000.) ));
+    het_.insert( std::pair< ObjectType, TH1F* >(*itr, dirs_.at(*itr).make<TH1F>("et", "Full ET;ET [l1 units];", 2000, 0., 4000.) ));
+    hrateEt_.insert( std::pair< ObjectType, TH1F* >(*itr, dirs_.at(*itr).make<TH1F>("et rate", "Full ET;ET [l1 units];", 2000, 0., 4000.) ));
     hmet_.insert( std::pair< ObjectType, TH1F* >(*itr, dirs_.at(*itr).make<TH1F>("met", "MET;MET [l1 units];", 5000, -10., 99990.) ));
     hrateMet_.insert( std::pair< ObjectType, TH1F* >(*itr, dirs_.at(*itr).make<TH1F>("met rate", "MET;MET [l1 units];", 5000, -10., 99990.) ));
     heta_.insert( std::pair< ObjectType, TH1F* >(*itr, dirs_.at(*itr).make<TH1F>("eta", "Eta;Eta [l1 units];", 70, -35., 35.) ));
