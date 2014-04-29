@@ -27,7 +27,7 @@ namespace l1t {
 			      std::vector<Jet> & jets);
 
     void create(const std::vector<CaloTower> & towers,
-		std::vector<Jet> & jets, bool doDonutSubtraction=false);
+		std::vector<Jet> & jets, bool doDonutSubtraction);
     
     void filter(std::vector<Jet> & jets);
     
