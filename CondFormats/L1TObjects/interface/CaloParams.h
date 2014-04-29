@@ -46,6 +46,7 @@ namespace l1t {
 
     // jets
     double jetSeedThreshold() const { return jetSeedThreshold_; }
+    bool doDonutSubtraction() const { return doDonutSubtraction_; }
 
     //// setters ////
 
@@ -61,6 +62,7 @@ namespace l1t {
 
     // jets
     void setJetSeedThreshold(double thresh) { jetSeedThreshold_ = thresh; }
+    void setDoDonutSubtraction(bool donutSub) { doDonutSubtraction_ = donutSub; }
 
     // print parameters to stream:
     void print(std::ostream&) const;
@@ -121,6 +123,7 @@ namespace l1t {
     
     /* Jets */
     double jetSeedThreshold_;
+    bool doDonutSubtraction_;
     double jetNeighbourThreshold_;
     /* 	- calibration type */
     /* 	- calibration LUT parameters (xN, can set some maximum, say 20) */

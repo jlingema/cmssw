@@ -68,7 +68,7 @@ void l1t::Stage2MainProcessorFirmwareImp1::processEvent(const std::vector<l1t::C
   m_egAlgo->processEvent( egClusters, outTowers, egammas );
   m_egClusterAlgo->processEvent( outTowers, tauClusters );
   m_tauAlgo->processEvent( tauClusters, taus );
-  m_jetAlgo->processEvent( outTowers, jets );
+  m_jetAlgo->processEvent( outTowers, jets ); 
   m_sumAlgo->processEvent( outTowers, towerSums );
   m_jetSumAlgo->processEvent( jets, jetSums );  
 
