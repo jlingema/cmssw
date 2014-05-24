@@ -68,15 +68,15 @@ private:
   //virtual void endLuminosityBlock(edm::LuminosityBlock const&, edm::EventSetup const&) override;
   
   // ----------member data ---------------------------
-  edm::EDGetToken m_towerToken;
-  edm::EDGetToken m_clusterToken;
+  //edm::EDGetToken m_towerToken;
+  //edm::EDGetToken m_clusterToken;
   edm::EDGetToken m_egToken;
   edm::EDGetToken m_tauToken;
   edm::EDGetToken m_jetToken;
   edm::EDGetToken m_sumToken;
   
-  enum ObjectType{Tower=0x1,
-		  Cluster=0x2,
+  enum ObjectType{//Tower=0x1,
+		  //Cluster=0x2,
 		  EG=0x3,
 		  Tau=0x4,
 		  Jet=0x5,
@@ -111,22 +111,22 @@ Stage2CaloAnalyzer::Stage2CaloAnalyzer(const edm::ParameterSet& iConfig)
    //now do what ever initialization is needed
 
   // register what you consume and keep token for later access:
-  m_towerToken   = consumes<l1t::CaloTowerBxCollection>  (iConfig.getParameter<edm::InputTag>("towerToken"));
-  m_clusterToken = consumes<l1t::CaloClusterBxCollection>(iConfig.getParameter<edm::InputTag>("clusterToken"));
+  //m_towerToken   = consumes<l1t::CaloTowerBxCollection>  (iConfig.getParameter<edm::InputTag>("towerToken"));
+  //m_clusterToken = consumes<l1t::CaloClusterBxCollection>(iConfig.getParameter<edm::InputTag>("clusterToken"));
   m_egToken      = consumes<l1t::EGammaBxCollection>     (iConfig.getParameter<edm::InputTag>("egToken"));
   m_tauToken     = consumes<l1t::TauBxCollection>        (iConfig.getParameter<edm::InputTag>("tauToken"));
   m_jetToken     = consumes<l1t::JetBxCollection>        (iConfig.getParameter<edm::InputTag>("jetToken"));
   m_sumToken     = consumes<l1t::EtSumBxCollection>      (iConfig.getParameter<edm::InputTag>("etSumToken"));
 
-  types_.push_back( Tower );
-  types_.push_back( Cluster );
+  //types_.push_back( Tower );
+  //types_.push_back( Cluster );
   types_.push_back( EG );
   types_.push_back( Tau );
   types_.push_back( Jet );
   types_.push_back( Sum );
 
-  typeStr_.push_back( "tower" );
-  typeStr_.push_back( "cluster" );
+  //typeStr_.push_back( "tower" );
+  //typeStr_.push_back( "cluster" );
   typeStr_.push_back( "eg" );
   typeStr_.push_back( "tau" );
   typeStr_.push_back( "jet" );
@@ -162,27 +162,27 @@ Stage2CaloAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   
   
   // get towers
-  Handle< BXVector<l1t::CaloTower> > towers;
-  iEvent.getByToken(m_towerToken,towers);
+  //Handle< BXVector<l1t::CaloTower> > towers;
+  //iEvent.getByToken(m_towerToken,towers);
 
-  for ( auto itr = towers->begin(0); itr != towers->end(0); ++itr ) {
-    het_.at(Tower)->Fill( itr->hwPt() );
-    heta_.at(Tower)->Fill( itr->hwEta() );
-    hphi_.at(Tower)->Fill( itr->hwPhi() );
-    hem_.at(Tower)->Fill( itr->hwEtEm() );
-    hhad_.at(Tower)->Fill( itr->hwEtHad() );
-    hratio_.at(Tower)->Fill( itr->hwEtRatio() );
-  }
+  //for ( auto itr = towers->begin(0); itr != towers->end(0); ++itr ) {
+    //het_.at(Tower)->Fill( itr->hwPt() );
+    //heta_.at(Tower)->Fill( itr->hwEta() );
+    //hphi_.at(Tower)->Fill( itr->hwPhi() );
+    //hem_.at(Tower)->Fill( itr->hwEtEm() );
+    //hhad_.at(Tower)->Fill( itr->hwEtHad() );
+    //hratio_.at(Tower)->Fill( itr->hwEtRatio() );
+  //}
 
   // get cluster
-  Handle< BXVector<l1t::CaloCluster> > clusters;
-  iEvent.getByToken(m_clusterToken,clusters);
+  //Handle< BXVector<l1t::CaloCluster> > clusters;
+  //iEvent.getByToken(m_clusterToken,clusters);
 
-  for ( auto itr = clusters->begin(0); itr !=clusters->end(0); ++itr ) {
-    het_.at(Cluster)->Fill( itr->hwPt() );
-    heta_.at(Cluster)->Fill( itr->hwEta() );
-    hphi_.at(Cluster)->Fill( itr->hwPhi() );
-  }
+  //for ( auto itr = clusters->begin(0); itr !=clusters->end(0); ++itr ) {
+    //het_.at(Cluster)->Fill( itr->hwPt() );
+    //heta_.at(Cluster)->Fill( itr->hwEta() );
+    //hphi_.at(Cluster)->Fill( itr->hwPhi() );
+  //}
 
   // get EG
   Handle< BXVector<l1t::EGamma> > egs;
@@ -245,12 +245,12 @@ Stage2CaloAnalyzer::beginJob()
     heta_.insert( std::pair< ObjectType, TH1F* >(*itr, dirs_.at(*itr).make<TH1F>("eta", "", 70, -35., 35.) ));
     hphi_.insert( std::pair< ObjectType, TH1F* >(*itr, dirs_.at(*itr).make<TH1F>("phi", "", 72, 0., 72.) ));
     
-    if (*itr==Tower) {
+    /*if (*itr==Tower) {
       hem_.insert( std::pair< ObjectType, TH1F* >(*itr, dirs_.at(*itr).make<TH1F>("em", "", 50, 0., 100.) ));
       hhad_.insert( std::pair< ObjectType, TH1F* >(*itr, dirs_.at(*itr).make<TH1F>("had", "", 50, 0., 100.) ));
       hratio_.insert( std::pair< ObjectType, TH1F* >(*itr, dirs_.at(*itr).make<TH1F>("ratio", "", 10, 0., 10.) ));
     }
-
+*/
   }
 
 }

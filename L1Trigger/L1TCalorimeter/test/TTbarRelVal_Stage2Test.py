@@ -26,7 +26,8 @@ process.maxEvents = cms.untracked.PSet(
 # Input source
 process.source = cms.Source("PoolSource",
     secondaryFileNames = cms.untracked.vstring(),
-    fileNames = cms.untracked.vstring('/store/relval/CMSSW_7_1_0_pre2/RelValTTbar_13/GEN-SIM-DIGI-RAW-HLTDEBUG/POSTLS170_V3-v1/00000/20379CB0-E28E-E311-97BE-0026189438A7.root')
+    #fileNames = cms.untracked.vstring('/store/relval/CMSSW_7_1_0_pre2/RelValTTbar_13/GEN-SIM-DIGI-RAW-HLTDEBUG/POSTLS170_V3-v1/00000/20379CB0-E28E-E311-97BE-0026189438A7.root')
+    fileNames = cms.untracked.vstring('/store/relval/CMSSW_7_1_0_pre7/RelValTTbar_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PU50ns_PRE_LS171_V8-v1/00000/124AFDC0-9CD1-E311-AC53-02163E00BA3E.root')
 )
 
 process.options = cms.untracked.PSet(
@@ -61,7 +62,7 @@ process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:startup', '')
 
 # upgrade calo stage 2
 process.load('L1Trigger.L1TCalorimeter.L1TCaloStage2_cff')
-process.load('L1Trigger.L1TCalorimeter.l1tCaloAnalyzer_cfi')
+process.load('L1Trigger.L1TCalorimeter.l1tStage2CaloAnalyzer_cfi')
 
 # enable debug message logging for our modules
 process.MessageLogger = cms.Service(
@@ -96,7 +97,7 @@ process.L1simulation_step = cms.Path(process.ecalDigis
                                      +process.hcalDigis
                                      +process.valHcalTriggerPrimitiveDigis
                                      +process.L1TCaloStage2
-                                     +process.l1tCaloAnalyzer)
+                                     +process.l1tStage2CaloAnalyzer)
 process.RECOSIMoutput_step = cms.EndPath(process.RECOSIMoutput)
 
 # Schedule definition

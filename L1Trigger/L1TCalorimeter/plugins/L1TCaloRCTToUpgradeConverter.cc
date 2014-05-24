@@ -12,7 +12,8 @@
 #include "DataFormats/Math/interface/LorentzVector.h"
 
 #include <vector>
-
+//#include <iostream>
+//using namespace std;
 //#include <stdio.h>
 
 l1t::L1TCaloRCTToUpgradeConverter::L1TCaloRCTToUpgradeConverter(const edm::ParameterSet& ps) {
@@ -83,7 +84,7 @@ l1t::L1TCaloRCTToUpgradeConverter::produce(edm::Event& iEvent, const edm::EventS
 
     // create new format
     emcands->push_back( em->bx(), EmCand );
-
+    //cout << "EM   " << (int) em->regionId().ieta() << endl;
   }
 
   // loop over regions
@@ -113,7 +114,7 @@ l1t::L1TCaloRCTToUpgradeConverter::produce(edm::Event& iEvent, const edm::EventS
 
     // add to output
     regions->push_back( rgn->bx(), region );
-
+    //cout << "region et  " << rgn->et() << endl;
   }
 
   iEvent.put(emcands);
