@@ -139,8 +139,10 @@ uGMTInputProducerFromGen::produce(edm::Event& iEvent, const edm::EventSetup& iSe
 
   l1t::L1TRegionalMuonCandidate mu;
   l1t::L1TGMTInputCaloSum tSum;
-  const float phiToInt = 163.4521265553765f; 
-  const float etaToInt = 100.0f;
+  // alternative scale (using full phi bit-width): 163.4521265553765f; 
+  const float phiToInt = 91.67324722093171f;
+  // alternative scale: 100.0f;
+  const float etaToInt = 90.9090909090f; 
   const int maxPt = (1 << 9)-1;
   int muCntr = 0;
 
