@@ -13,7 +13,7 @@ The latter can be used to change parameters in crab.
 job = 0 #job number
 njob = 1 #number of jobs
 nevents = 3564 #number of events
-rootout = True #whether to produce root file
+rootout = False #whether to produce root file
 dump = False #dump python
 
 # Argument parsing
@@ -71,26 +71,26 @@ process.maxEvents = cms.untracked.PSet(
 process.source = cms.Source("PoolSource",
     secondaryFileNames = cms.untracked.vstring(),
     #### MinBias:
-    fileNames = cms.untracked.vstring(
-        "/store/relval/CMSSW_7_3_0_pre1/RelValMinBias_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PRE_LS172_V15-v1/00000/088590EF-DA59-E411-9F9E-0025905B85E8.root",
-        "/store/relval/CMSSW_7_3_0_pre1/RelValMinBias_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PRE_LS172_V15-v1/00000/2A5714A6-D959-E411-834E-0025905A607A.root",
-        "/store/relval/CMSSW_7_3_0_pre1/RelValMinBias_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PRE_LS172_V15-v1/00000/3076DDFD-D959-E411-96F3-0025905B8610.root",
-        "/store/relval/CMSSW_7_3_0_pre1/RelValMinBias_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PRE_LS172_V15-v1/00000/46B344AD-D959-E411-A9BC-0026189438AD.root",
-        "/store/relval/CMSSW_7_3_0_pre1/RelValMinBias_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PRE_LS172_V15-v1/00000/46FCEB7D-E159-E411-8487-0025905B8606.root",
-        "/store/relval/CMSSW_7_3_0_pre1/RelValMinBias_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PRE_LS172_V15-v1/00000/6AC993CD-E959-E411-8490-0026189438E9.root",
-        "/store/relval/CMSSW_7_3_0_pre1/RelValMinBias_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PRE_LS172_V15-v1/00000/6E732DFF-D959-E411-8D19-003048FFD730.root",
-        "/store/relval/CMSSW_7_3_0_pre1/RelValMinBias_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PRE_LS172_V15-v1/00000/82D03701-DA59-E411-8337-0025905A6090.root",
-        "/store/relval/CMSSW_7_3_0_pre1/RelValMinBias_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PRE_LS172_V15-v1/00000/8495BBCD-EA59-E411-8E86-0025905A609E.root",
-        "/store/relval/CMSSW_7_3_0_pre1/RelValMinBias_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PRE_LS172_V15-v1/00000/941920C5-E159-E411-863E-0025905A48F0.root",
-        "/store/relval/CMSSW_7_3_0_pre1/RelValMinBias_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PRE_LS172_V15-v1/00000/9C5A16D3-D559-E411-A360-002618943842.root",
-        "/store/relval/CMSSW_7_3_0_pre1/RelValMinBias_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PRE_LS172_V15-v1/00000/A8D2F19B-DA59-E411-A44D-002618FDA207.root",
-        "/store/relval/CMSSW_7_3_0_pre1/RelValMinBias_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PRE_LS172_V15-v1/00000/C452A5B9-D659-E411-BDDB-0025905A48C0.root",
-        "/store/relval/CMSSW_7_3_0_pre1/RelValMinBias_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PRE_LS172_V15-v1/00000/D0B4C29C-DB59-E411-BA75-0025905AA9F0.root",
-        "/store/relval/CMSSW_7_3_0_pre1/RelValMinBias_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PRE_LS172_V15-v1/00000/D86ABAEC-DA59-E411-A943-002618943809.root",
-        "/store/relval/CMSSW_7_3_0_pre1/RelValMinBias_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PRE_LS172_V15-v1/00000/DE4D1CFE-D859-E411-AF2D-002590596490.root",
-        "/store/relval/CMSSW_7_3_0_pre1/RelValMinBias_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PRE_LS172_V15-v1/00000/EADBBEA1-DA59-E411-9A46-0025905A60D2.root",
-        "/store/relval/CMSSW_7_3_0_pre1/RelValMinBias_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PRE_LS172_V15-v1/00000/F0977A93-E359-E411-A0E0-002354EF3BDD.root",
-    ),
+    # fileNames = cms.untracked.vstring(
+    #     "/store/relval/CMSSW_7_3_0_pre1/RelValMinBias_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PRE_LS172_V15-v1/00000/088590EF-DA59-E411-9F9E-0025905B85E8.root",
+    #     "/store/relval/CMSSW_7_3_0_pre1/RelValMinBias_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PRE_LS172_V15-v1/00000/2A5714A6-D959-E411-834E-0025905A607A.root",
+    #     "/store/relval/CMSSW_7_3_0_pre1/RelValMinBias_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PRE_LS172_V15-v1/00000/3076DDFD-D959-E411-96F3-0025905B8610.root",
+    #     "/store/relval/CMSSW_7_3_0_pre1/RelValMinBias_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PRE_LS172_V15-v1/00000/46B344AD-D959-E411-A9BC-0026189438AD.root",
+    #     "/store/relval/CMSSW_7_3_0_pre1/RelValMinBias_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PRE_LS172_V15-v1/00000/46FCEB7D-E159-E411-8487-0025905B8606.root",
+    #     "/store/relval/CMSSW_7_3_0_pre1/RelValMinBias_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PRE_LS172_V15-v1/00000/6AC993CD-E959-E411-8490-0026189438E9.root",
+    #     "/store/relval/CMSSW_7_3_0_pre1/RelValMinBias_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PRE_LS172_V15-v1/00000/6E732DFF-D959-E411-8D19-003048FFD730.root",
+    #     "/store/relval/CMSSW_7_3_0_pre1/RelValMinBias_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PRE_LS172_V15-v1/00000/82D03701-DA59-E411-8337-0025905A6090.root",
+    #     "/store/relval/CMSSW_7_3_0_pre1/RelValMinBias_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PRE_LS172_V15-v1/00000/8495BBCD-EA59-E411-8E86-0025905A609E.root",
+    #     "/store/relval/CMSSW_7_3_0_pre1/RelValMinBias_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PRE_LS172_V15-v1/00000/941920C5-E159-E411-863E-0025905A48F0.root",
+    #     "/store/relval/CMSSW_7_3_0_pre1/RelValMinBias_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PRE_LS172_V15-v1/00000/9C5A16D3-D559-E411-A360-002618943842.root",
+    #     "/store/relval/CMSSW_7_3_0_pre1/RelValMinBias_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PRE_LS172_V15-v1/00000/A8D2F19B-DA59-E411-A44D-002618FDA207.root",
+    #     "/store/relval/CMSSW_7_3_0_pre1/RelValMinBias_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PRE_LS172_V15-v1/00000/C452A5B9-D659-E411-BDDB-0025905A48C0.root",
+    #     "/store/relval/CMSSW_7_3_0_pre1/RelValMinBias_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PRE_LS172_V15-v1/00000/D0B4C29C-DB59-E411-BA75-0025905AA9F0.root",
+    #     "/store/relval/CMSSW_7_3_0_pre1/RelValMinBias_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PRE_LS172_V15-v1/00000/D86ABAEC-DA59-E411-A943-002618943809.root",
+    #     "/store/relval/CMSSW_7_3_0_pre1/RelValMinBias_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PRE_LS172_V15-v1/00000/DE4D1CFE-D859-E411-AF2D-002590596490.root",
+    #     "/store/relval/CMSSW_7_3_0_pre1/RelValMinBias_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PRE_LS172_V15-v1/00000/EADBBEA1-DA59-E411-9A46-0025905A60D2.root",
+    #     "/store/relval/CMSSW_7_3_0_pre1/RelValMinBias_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PRE_LS172_V15-v1/00000/F0977A93-E359-E411-A0E0-002354EF3BDD.root",
+    # ),
     # #### SingleMuPt100
     # fileNames = cms.untracked.vstring (
     #     "/store/relval/CMSSW_7_3_0_pre1/RelValSingleMuPt100/GEN-SIM-DIGI-RECO/PRE_LS172_V15_FastSim-v1/00000/30173E37-DB59-E411-A4C1-0025905B8592.root",
@@ -105,27 +105,38 @@ process.source = cms.Source("PoolSource",
     #     "/store/relval/CMSSW_7_3_0_pre1/RelValZMM_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PRE_LS172_V15-v1/00000/9AB4E16C-E159-E411-8BC8-002618943843.root",
     #     "/store/relval/CMSSW_7_3_0_pre1/RelValZMM_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PRE_LS172_V15-v1/00000/B4FDFC56-EC59-E411-A74B-0025905A48E4.root",
     # ),
-    # #### TtbarRelval_13
+    #### TtbarRelval_13
     # fileNames = cms.untracked.vstring (
-    #     "/store/relval/CMSSW_7_3_0_pre1/RelValTTbar_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PRE_LS172_V15-v1/00000/08DC28C8-E059-E411-B9C6-0025905B85AA.root",
-    #     "/store/relval/CMSSW_7_3_0_pre1/RelValTTbar_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PRE_LS172_V15-v1/00000/3AA768C7-E059-E411-A3E5-003048FFD752.root",
-    #     "/store/relval/CMSSW_7_3_0_pre1/RelValTTbar_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PRE_LS172_V15-v1/00000/44B63DCA-E059-E411-AE2F-003048FF86CA.root",
-    #     "/store/relval/CMSSW_7_3_0_pre1/RelValTTbar_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PRE_LS172_V15-v1/00000/B473CAC4-E059-E411-85E7-0025905B8590.root",
-    #     "/store/relval/CMSSW_7_3_0_pre1/RelValTTbar_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PRE_LS172_V15-v1/00000/EC593DCA-E059-E411-A877-0025905B8572.root",
+    #     '/store/relval/CMSSW_7_2_0_pre6/RelValTTbar_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PU50ns_PRE_LS172_V12-v1/00000/2088E3F2-5842-E411-A614-0025905A6080.root',
+    #     '/store/relval/CMSSW_7_2_0_pre6/RelValTTbar_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PU50ns_PRE_LS172_V12-v1/00000/26782EF3-5842-E411-AAD0-0025905B85A2.root',
+    #     '/store/relval/CMSSW_7_2_0_pre6/RelValTTbar_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PU50ns_PRE_LS172_V12-v1/00000/26A7E8F0-5842-E411-A53A-00261894398D.root',
+    #     '/store/relval/CMSSW_7_2_0_pre6/RelValTTbar_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PU50ns_PRE_LS172_V12-v1/00000/32B26189-5D42-E411-97D8-002618943976.root',
+    #     '/store/relval/CMSSW_7_2_0_pre6/RelValTTbar_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PU50ns_PRE_LS172_V12-v1/00000/6AB614F9-5842-E411-9C66-002618943870.root',
+    #     '/store/relval/CMSSW_7_2_0_pre6/RelValTTbar_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PU50ns_PRE_LS172_V12-v1/00000/6C874C8A-5D42-E411-A03D-0026189438B9.root',
+    #     '/store/relval/CMSSW_7_2_0_pre6/RelValTTbar_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PU50ns_PRE_LS172_V12-v1/00000/80FFAD28-5942-E411-8AF6-00261894392F.root',
+    #     '/store/relval/CMSSW_7_2_0_pre6/RelValTTbar_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PU50ns_PRE_LS172_V12-v1/00000/82F1577B-5942-E411-8D8E-002618943986.root',
+    #     '/store/relval/CMSSW_7_2_0_pre6/RelValTTbar_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PU50ns_PRE_LS172_V12-v1/00000/94BD99F2-5842-E411-80AC-003048FFCC2C.root',
+    #     '/store/relval/CMSSW_7_2_0_pre6/RelValTTbar_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PU50ns_PRE_LS172_V12-v1/00000/A6C5A67A-5942-E411-ABCD-00261894397A.root',
+    #     '/store/relval/CMSSW_7_2_0_pre6/RelValTTbar_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PU50ns_PRE_LS172_V12-v1/00000/B8F19FEE-5842-E411-B24C-0026189438E7.root',
+    #     '/store/relval/CMSSW_7_2_0_pre6/RelValTTbar_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PU50ns_PRE_LS172_V12-v1/00000/D249C9F3-5842-E411-B1C8-0025905B858E.root',
+    #     '/store/relval/CMSSW_7_2_0_pre6/RelValTTbar_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PU50ns_PRE_LS172_V12-v1/00000/DCAE702D-5942-E411-86B8-0026189438E0.root',
+    #     '/store/relval/CMSSW_7_2_0_pre6/RelValTTbar_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PU50ns_PRE_LS172_V12-v1/00000/ECBAC728-5942-E411-AF08-0026189438F8.root',
     # ),
-    # #### WM_13
-    # fileNames = cms.untracked.vstring (
-    #     "/store/relval/CMSSW_7_3_0_pre1/RelValWM_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PRE_LS172_V15-v1/00000/5A2253B3-CE59-E411-BB6C-003048FFD770.root",
-    #     "/store/relval/CMSSW_7_3_0_pre1/RelValWM_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PRE_LS172_V15-v1/00000/805AA3B4-CE59-E411-A5B1-0025905B85AA.root",
-    #     "/store/relval/CMSSW_7_3_0_pre1/RelValWM_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PRE_LS172_V15-v1/00000/9202D8F6-D959-E411-B764-0025905B85E8.root",
-    #     "/store/relval/CMSSW_7_3_0_pre1/RelValWM_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PRE_LS172_V15-v1/00000/92D2E356-D059-E411-8EDD-0025905A6110.root",
-    #     "/store/relval/CMSSW_7_3_0_pre1/RelValWM_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PRE_LS172_V15-v1/00000/E836F7B2-D859-E411-9659-0025905A6118.root",
-    # ),
+    #### WM_13
+    fileNames = cms.untracked.vstring (
+        "/store/relval/CMSSW_7_3_0_pre1/RelValWM_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PRE_LS172_V15-v1/00000/5A2253B3-CE59-E411-BB6C-003048FFD770.root",
+        "/store/relval/CMSSW_7_3_0_pre1/RelValWM_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PRE_LS172_V15-v1/00000/805AA3B4-CE59-E411-A5B1-0025905B85AA.root",
+        "/store/relval/CMSSW_7_3_0_pre1/RelValWM_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PRE_LS172_V15-v1/00000/9202D8F6-D959-E411-B764-0025905B85E8.root",
+        "/store/relval/CMSSW_7_3_0_pre1/RelValWM_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PRE_LS172_V15-v1/00000/92D2E356-D059-E411-8EDD-0025905A6110.root",
+        "/store/relval/CMSSW_7_3_0_pre1/RelValWM_13/GEN-SIM-DIGI-RAW-HLTDEBUG/PRE_LS172_V15-v1/00000/E836F7B2-D859-E411-9659-0025905A6118.root",
+    ),
     skipEvents = cms.untracked.uint32(skip)
     )
 
 process.output =cms.OutputModule("PoolOutputModule",
-    outputCommands = cms.untracked.vstring('keep *'),
+    outputCommands = cms.untracked.vstring(
+        'keep *_*_*_L1TEMULATION',
+    ),
     fileName = cms.untracked.string('testGlobalMCInputProducer_'+`job`+'.root')
     )
     
@@ -179,7 +190,7 @@ process.mcL1GTinput = cms.EDProducer("l1t::GenToInputProducer",
                      emptyBxEvt = cms.int32(neventsPerJob)
                                      )
 
-process.mcL1GTinput.maxMuCand = cms.int32(0)
+process.mcL1GTinput.maxMuCand = cms.int32(8)
 process.mcL1GTinput.maxJetCand = cms.int32(12)
 process.mcL1GTinput.maxEGCand  = cms.int32(12)
 process.mcL1GTinput.maxTauCand = cms.int32(8)
@@ -232,7 +243,8 @@ process.load('L1Trigger.L1TGlobal.StableParametersConfig_cff')
 process.load('L1Trigger.L1TGlobal.TriggerMenuXml_cfi')
 process.TriggerMenuXml.TriggerMenuLuminosity = 'startup'
 #process.TriggerMenuXml.DefXmlFile = 'L1_Example_Menu_2013.xml'
-process.TriggerMenuXml.DefXmlFile = 'L1Menu_Reference_2014.xml'
+# process.TriggerMenuXml.DefXmlFile = 'L1Menu_Reference_2014.xml'
+process.TriggerMenuXml.DefXmlFile = 'L1Menu_Muons2014.xml'
 
 process.load('L1Trigger.L1TGlobal.TriggerMenuConfig_cff')
 process.es_prefer_l1GtParameters = cms.ESPrefer('l1t::TriggerMenuXmlProducer','TriggerMenuXml')
@@ -291,7 +303,7 @@ process.p1 = cms.Path(
     process.uGMTInputProducer
     *process.microGMTEmulator
     *process.gtInput
-#    *process.dumpGT
+# #    *process.dumpGT
     *process.simL1uGtDigis
     *process.dumpGTRecord
 #    * process.debug
