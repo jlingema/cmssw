@@ -153,11 +153,13 @@ uGMTInputProducerFromGen::produce(edm::Event& iEvent, const edm::EventSetup& iSe
     int gen_idx = *it;
     const reco::Candidate& mcMuon = genParticles->at(gen_idx);
     double eta = mcMuon.eta();
-    if (fabs(eta) > 2.4) continue; // out of acceptance
+    if (fabs(eta) > 2.45) continue; // out of acceptance
     int hwPt = int(mcMuon.pt() * 2);
     hwPt = (hwPt < maxPt ? hwPt : maxPt);
     int hwEta = int(eta * etaToInt);
-    int hwPhi = int(mcMuon.phi() * phiToInt);
+    float phi = mcMuon.phi();
+    if (phi < 0) phi += 2*3.14159265358979323846; // add 2*pi
+    int hwPhi = int(phi * phiToInt);
     int hwQual = 8;
     int hwCharge = (mcMuon.charge() > 0) ? 0 : 1;
     int hwChargeValid = 1;
