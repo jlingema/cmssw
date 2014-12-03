@@ -149,8 +149,6 @@ l1t::MicroGMTEmulator::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
   iEvent.getByLabel(m_overlapTfInputTag, overlapMuons);
   iEvent.getByLabel(m_trigTowerTag, trigTowers);
   
-  std::cout << "inputs: barrel:" << barrelMuons->size() << " fwd: " << forwardMuons->size() << " ovl: " << overlapMuons->size() << std::endl;
-
   m_isolationUnit.calculate5by1Sums(*trigTowers);
   MicroGMTConfiguration::InterMuonList internalMuonsBarrel;
   MicroGMTConfiguration::InterMuonList internalMuonsEndcapPos;
@@ -173,15 +171,12 @@ l1t::MicroGMTEmulator::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
   calculateRank(internalMuonsEndcapPos);
   calculateRank(internalMuonsOverlapNeg);
   calculateRank(internalMuonsOverlapPos);
-  
-  sortMuons(internalMuonsBarrel, 8);
+
+  sortMuons(internalMuonsEndcapPos, 4);  
   sortMuons(internalMuonsOverlapPos, 4);
+  sortMuons(internalMuonsBarrel, 8);
   sortMuons(internalMuonsOverlapNeg, 4);
-  sortMuons(internalMuonsEndcapPos, 4);
   sortMuons(internalMuonsEndcapNeg, 4);
-
-  std::cout << "inputs: barrel:" << internalMuonsBarrel.size() << " fwd+: " << internalMuonsEndcapPos.size() << " fwd-: " << internalMuonsEndcapNeg.size()  << " ovl+: " << internalMuonsOverlapPos.size() << " ovl-: " << internalMuonsOverlapNeg.size() << std::endl;
-
 
   MicroGMTConfiguration::InterMuonList internalMuons;
   addMuonsToCollections(internalMuonsEndcapPos, internalMuons, intermediateMuons);
@@ -189,14 +184,12 @@ l1t::MicroGMTEmulator::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
   addMuonsToCollections(internalMuonsBarrel, internalMuons, intermediateMuons);
   addMuonsToCollections(internalMuonsOverlapNeg, internalMuons, intermediateMuons);
   addMuonsToCollections(internalMuonsEndcapNeg, internalMuons, intermediateMuons);
-  std::cout << "first sort:" << internalMuons.size() << std::endl;
-  // OutputCollection sort1Candidates;
+    // OutputCollection sort1Candidates;
   // rank muons only does push_back
   sortMuons(internalMuons, 8);
 
   m_isolationUnit.isolate(internalMuons);
-  std::cout << "result second sort nmu = " << internalMuons.size() << std::endl;
-  // sort out-muons by n(wins)...
+  
   for (int nwins = 23; nwins >= 16; --nwins) {
     for (auto mu = internalMuons.begin(); mu != internalMuons.end(); ++mu) {
       if (mu->hwWins() == nwins && mu->hwPt() > 0) {
@@ -208,7 +201,6 @@ l1t::MicroGMTEmulator::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
     }
   }
   
-  std::cout << "n(out) = " << outMuons->size(0) << std::endl;
   iEvent.put(outMuons);
   iEvent.put(intermediateMuons, "intermediateMuons");
 }
