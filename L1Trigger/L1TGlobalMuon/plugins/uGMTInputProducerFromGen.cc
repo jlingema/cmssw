@@ -61,6 +61,8 @@ class uGMTInputProducerFromGen : public edm::EDProducer {
       virtual void beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
       virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
 
+      static bool compareMuons(const L1TRegionalMuonCandidate&, const L1TRegionalMuonCandidate&);
+
       int linkNo(const float phi, const int type, const int offset) const;
       
       // ----------member data ---------------------------
@@ -108,7 +110,11 @@ uGMTInputProducerFromGen::~uGMTInputProducerFromGen()
 
 
 
-
+bool 
+uGMTInputProducerFromGen::compareMuons(const L1TRegionalMuonCandidate& mu1, const L1TRegionalMuonCandidate& mu2) 
+{
+  return mu1.link() < mu2.link();
+}
 
 // ------------ method called to produce the data  ------------
 void
@@ -177,7 +183,7 @@ uGMTInputProducerFromGen::produce(edm::Event& iEvent, const edm::EventSetup& iSe
         offset = (eta > 0 ? 0 : 30);
       }
     } 
-    int link = linkNo(mcMuon.phi(), type, offset);
+    int link = linkNo(phi, type, offset);
     mu.setLink(link);
 
     mu.setHwEta(hwEta);
@@ -197,6 +203,10 @@ uGMTInputProducerFromGen::produce(edm::Event& iEvent, const edm::EventSetup& iSe
     }
   }
 
+  std::sort(barrelMuons->begin(), barrelMuons->end(), uGMTInputProducerFromGen::compareMuons);
+  std::sort(overlapMuons->begin(), overlapMuons->end(), uGMTInputProducerFromGen::compareMuons);
+  std::sort(endcapMuons->begin(), endcapMuons->end(), uGMTInputProducerFromGen::compareMuons);
+
   while (towerSums->size() < 1008) {
     // from where could I take the tower energies?
     towerSums->emplace_back();
@@ -208,6 +218,8 @@ uGMTInputProducerFromGen::produce(edm::Event& iEvent, const edm::EventSetup& iSe
   m_currEvt++;
  
 }
+
+
 
 int uGMTInputProducerFromGen::linkNo(const float phi, const int type, const int offset) const {
   if (type == 0) {
