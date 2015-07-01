@@ -6,6 +6,7 @@
 #include "DataFormats/L1TMuon/interface/L1TMuonCandidateTrackFwd.h"
 #include "DataFormats/Common/interface/Wrapper.h"
 #include "DataFormats/Common/interface/RefToBase.h"
+#include "DataFormats/Common/interface/Ref.h"
 
 #include "DataFormats/L1TMuon/interface/L1TMuonRegionalTracksFwd.h"
 
@@ -25,14 +26,16 @@ namespace {
     l1t::L1TGMTInputCaloSumCollection caloSum;
     edm::Wrapper<l1t::L1TGMTInputCaloSumCollection> caloSumWrap;
 
-    l1t::L1TRegionalMuonCandidateCollection regCand;
+    l1t::L1TRegionalMuonCandidateCollection regCandColl;
     edm::Wrapper<l1t::L1TRegionalMuonCandidateCollection> regCandWrap;
+    edm::Ref<l1t::L1TRegionalMuonCandidateCollection> regRef;
+
 
     // trigger primitive information
     TriggerPrimitive::RPCData rpcD;
     TriggerPrimitive::CSCData cscD;
     TriggerPrimitive::DTData  dtD;
-    
+
     edm::Wrapper<TriggerPrimitive::RPCData> wrpcD;
     edm::Wrapper<TriggerPrimitive::CSCData> wcscD;
     edm::Wrapper<TriggerPrimitive::DTData>  wdtD;
@@ -45,8 +48,8 @@ namespace {
     TriggerPrimitiveRef rtrigPrim;
     TriggerPrimitiveList rvtrigPrim;
     TriggerPrimitiveStationMap smtrigPrim;
-    
-    TriggerPrimitivePtr ptrigPrim;   
+
+    TriggerPrimitivePtr ptrigPrim;
 
     // internal tracks
     InternalTrack tk;
@@ -67,7 +70,7 @@ namespace {
 
     CandidateTrackRef rcctk;
     CandidateTrackPtr pcctk;
-    
+
     // regional muon system tracks removed from their containers
     // so we can save references to them
     RegionalCandBaseRef rcR2B;
@@ -78,7 +81,7 @@ namespace {
     edm::Wrapper<DTTrackCollection> wdtTrkColl;
     DTTrackPtr dtTrkPtr;
     DTTrackRef dtTrackRef;
-    
+
     CSCTrackCollection cscTrkColl;
     edm::Wrapper<CSCTrackCollection> wcscTrkColl;
     CSCTrackPtr cscTrkPtr;

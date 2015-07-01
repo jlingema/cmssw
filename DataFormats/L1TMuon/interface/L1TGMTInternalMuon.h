@@ -1,6 +1,7 @@
 #ifndef __l1t_gmt_internal_muon_h__
 #define __l1t_gmt_internal_muon_h__
 
+#include "DataFormats/Common/interface/Ref.h"
 #include "DataFormats/L1TMuon/interface/L1TRegionalMuonCandidate.h"
 #include "DataFormats/L1TMuon/interface/L1TRegionalMuonCandidateFwd.h"
 #include <utility>
@@ -8,7 +9,7 @@
 namespace l1t {
 class L1TGMTInternalMuon {
   public:
-    explicit L1TGMTInternalMuon(const L1TRegionalMuonCandidate&);
+    explicit L1TGMTInternalMuon(const edm::Handle<L1TRegionalMuonCandidateCollection>&, size_t);
     L1TGMTInternalMuon(const L1TGMTInternalMuon&);
 
     virtual ~L1TGMTInternalMuon() {};
@@ -37,7 +38,8 @@ class L1TGMTInternalMuon {
     const int hwGlobalPhi() const { return m_hwGlobalPhi; }
 
     const L1TRegionalMuonCandidate& origin() const { return *m_regional; };
-    
+    const edm::Ref<L1TRegionalMuonCandidateCollection> originRef() const { return m_regional; };
+
     inline const int hwPt() const { return m_regional->hwPt(); };
     inline const int hwLocalPhi() const { return m_regional->hwPhi(); };
     inline const int hwEta() const { return m_regional->hwEta(); };
@@ -51,8 +53,8 @@ class L1TGMTInternalMuon {
 
   private:
     L1TGMTInternalMuon();
-    
-    const L1TRegionalMuonCandidate* m_regional;
+
+    const edm::Ref<L1TRegionalMuonCandidateCollection> m_regional;
     int m_hwRank;
     int m_hwCancelBit;
     int m_hwWins;
