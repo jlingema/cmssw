@@ -161,6 +161,7 @@ l1t::MicroGMTEmulator::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
   std::auto_ptr<MuonBxCollection> imdMuonsOMTFPos (new MuonBxCollection());
   std::auto_ptr<MuonBxCollection> imdMuonsOMTFNeg (new MuonBxCollection());
 
+
   Handle<MicroGMTConfiguration::InputCollection> bmtfMuons;
   Handle<MicroGMTConfiguration::InputCollection> emtfMuons;
   Handle<MicroGMTConfiguration::InputCollection> omtfMuons;
@@ -251,6 +252,7 @@ l1t::MicroGMTEmulator::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
       outMuons->push_back(0, outMu);
     }
   }
+
 
   iEvent.put(outMuons);
   iEvent.put(imdMuonsBMTF, "imdMuonsBMTF");
@@ -349,6 +351,9 @@ l1t::MicroGMTEmulator::splitAndConvertMuons(const edm::Handle<MicroGMTConfigurat
       wedges_pos[in->at(i).processor()].push_back(out);
     } else {
       std::shared_ptr<L1TGMTInternalMuon> out = std::make_shared<L1TGMTInternalMuon>(in, i);
+      if (out->trackFinderType() == tftype::omtf_pos) {
+        out->setTFType(tftype::omtf_neg);
+      }
       out_neg.emplace_back(out);
       wedges_neg[in->at(i).processor()].push_back(out);
     }

@@ -24,6 +24,7 @@ class L1TGMTInternalMuon {
     void setExtrapolation(int deta, int dphi);
     void setHwCaloEta(int idx) { m_hwCaloIndex.second = idx; };
     void setHwCaloPhi(int idx) { m_hwCaloIndex.first = idx; };
+    void setTFType(tftype type) { m_realtype = type; };
 
     const int hwCancelBit() const { return m_hwCancelBit; };
     const int hwRank() const { return m_hwRank; };
@@ -37,6 +38,7 @@ class L1TGMTInternalMuon {
     const int hwCaloPhi() const { return m_hwCaloIndex.first; };
     const int hwGlobalPhi() const { return m_hwGlobalPhi; }
 
+
     const L1TRegionalMuonCandidate& origin() const { return *m_regional; };
     const edm::Ref<L1TRegionalMuonCandidateCollection> originRef() const { return m_regional; };
 
@@ -48,7 +50,7 @@ class L1TGMTInternalMuon {
     inline const int hwQual() const { return m_regional->hwQual(); };
     inline const int hwTrackAddress() const { return m_regional->hwTrackAddress(); };
     inline const int processor() const { return m_regional->processor(); };
-    inline const tftype trackFinderType() const { return m_regional->trackFinderType(); };
+    inline const tftype trackFinderType() const { return m_realtype; };
     inline const int link() const { return m_regional->link(); }
 
   private:
@@ -64,6 +66,7 @@ class L1TGMTInternalMuon {
     int m_hwAbsIso;
     int m_hwRelIso;
     int m_hwGlobalPhi;
+    tftype m_realtype;
     std::pair<int, int> m_hwCaloIndex;
 };
 
