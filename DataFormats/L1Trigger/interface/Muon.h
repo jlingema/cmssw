@@ -70,7 +70,7 @@ namespace l1t {
     int hwDEtaExtra() const;
     int hwRank() const;
 
-    const L1TRegionalMuonCandidate& origin() const;
+    const RegionalRef origin() const;
 
   private:
 

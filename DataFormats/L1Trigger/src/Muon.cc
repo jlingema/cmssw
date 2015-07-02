@@ -59,9 +59,9 @@ l1t::Muon::Muon( const PolarLorentzVector& p4,
 {
 
 }
-const l1t::L1TRegionalMuonCandidate&
+const l1t::RegionalRef
 l1t::Muon::origin() const {
-  return *regional_;
+  return regional_;
 }
 
 
