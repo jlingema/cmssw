@@ -18,7 +18,7 @@ process.load('L1Trigger.L1EndcapMuonTrackFinder.L1RPCTFTrackConverter_cfi')
 #process.load('L1Trigger.L1EndcapMuonTrackFinder.L1TMuonSimpleDeltaEtaHitMatcher_cfi')
 
 from Configuration.AlCa.GlobalTag import GlobalTag
-process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:mc', '')
+process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:run2_mc', '')
 
 
 process.maxEvents = cms.untracked.PSet(

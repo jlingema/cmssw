@@ -384,10 +384,10 @@ void Forest::predictEvents(std::vector<Event*> eventsp, unsigned int numtrees)
 {
 // Predict values for eventsp by running them through the forest up to numtrees.
 
-    std::cout << "Using " << numtrees << " trees from the forest to predict events ... " << std::endl;
+    //std::cout << "Using " << numtrees << " trees from the forest to predict events ... " << std::endl;
     if(numtrees > trees.size())
     {
-        std::cout << std::endl << "!! Input greater than the forest size. Using forest.size() = " << trees.size() << " to predict instead." << std::endl;
+       // std::cout << std::endl << "!! Input greater than the forest size. Using forest.size() = " << trees.size() << " to predict instead." << std::endl;
         numtrees = trees.size();
     }
 
@@ -426,7 +426,7 @@ void Forest::loadForestFromXML(const char* directory, unsigned int numTrees)
     trees = std::vector<Tree*>(numTrees);
 
     // Load the Forest.
-    std::cout << std::endl << "Loading Forest from XML ... " << std::endl;
+    //std::cout << std::endl << "Loading Forest from XML ... " << std::endl;
     for(unsigned int i=0; i < numTrees; i++) 
     {   
         trees[i] = new Tree(); 

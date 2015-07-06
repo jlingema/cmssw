@@ -135,7 +135,7 @@ float CalculatePt(L1TMuon::InternalTrack track){
 		if(i != mode)
 			continue;
 			
-		std::cout<<"\nMode = "<<mode<<"\n\n";
+		if(verbose) std::cout<<"\nMode = "<<mode<<"\n\n";
 		
 		Forest *forest = new Forest();
 		const char *dir = "L1Trigger/L1EndcapMuonTrackFinder/plugins/ModeVariables/trees";

@@ -16,40 +16,21 @@ process.load('SimGeneral.MixingModule.mixNoPU_cfi')
 process.load('CalibCalorimetry.EcalLaserCorrection.ecalLaserCorrectionService_cfi')
 process.load('Configuration.StandardSequences.GeometryRecoDB_cff')
 process.load('Configuration.Geometry.GeometrySimDB_cff')
-#process.load('Configuration.StandardSequences.GeometrySimDB_cff')
 process.load('Configuration.StandardSequences.MagneticField_38T_cff')
 process.load('Configuration.StandardSequences.Generator_cff')
 process.load('IOMC.EventVertexGenerators.VtxSmearedRealistic8TeVCollision_cfi')
-#process.load('IOMC.EventVertexGenerators.VtxSmearedGauss_cfi')
 process.load('GeneratorInterface.Core.genFilterSummary_cff')
 process.load('Configuration.StandardSequences.SimIdeal_cff')
 process.load('Configuration.StandardSequences.Digi_cff')
 process.load('Configuration.StandardSequences.SimL1Emulator_cff')
 process.load('Configuration.StandardSequences.EndOfProcess_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
+process.load('L1Trigger.L1EndcapMuonTrackFinder.L1TMuonTriggerPrimitiveProducer_cfi')
 
-#process.load('FullSim_Configure_ME42_cff')
-'''
-process.load('Configuration.StandardSequences.Services_cff')
-process.load('SimGeneral.HepPDTESSource.pythiapdt_cfi')
-process.load('FWCore.MessageService.MessageLogger_cfi')
-process.load('Configuration.EventContent.EventContent_cff')
-process.load('SimGeneral.MixingModule.mixNoPU_cfi')
-process.load('Configuration.StandardSequences.GeometryRecoDB_cff')
-process.load('Configuration.Geometry.GeometrySimDB_cff')
-process.load('Configuration.StandardSequences.MagneticField_38T_cff')
-process.load('Configuration.StandardSequences.Generator_cff')
-process.load('IOMC.EventVertexGenerators.VtxSmearedGauss_cfi')
-process.load('GeneratorInterface.Core.genFilterSummary_cff')
-process.load('Configuration.StandardSequences.SimIdeal_cff')
-process.load('Configuration.StandardSequences.Digi_cff')
-process.load('Configuration.StandardSequences.SimL1Emulator_cff')
-process.load('Configuration.StandardSequences.EndOfProcess_cff')
-process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
-'''
+
 
 process.maxEvents = cms.untracked.PSet(
-    input = cms.untracked.int32(100)
+    input = cms.untracked.int32(10)
 )
 
 # Input source
@@ -68,10 +49,21 @@ process.configurationMetadata = cms.untracked.PSet(
 
 # Output definition
 
+outCommands = cms.untracked.vstring('drop *')
+outCommands.append('keep *_genParticles_*_*')
+outCommands.append('keep *_simCsctfDigis_*_*')
+outCommands.append('keep *_simDttfDigis_*_*')
+outCommands.append('keep *_simRpcTriggerDigis_*_*')
+outCommands.append('keep *_simMuonRPCDigis_*_*')
+outCommands.append('keep *_simDtTriggerPrimitiveDigis_*_*')
+outCommands.append('keep *_simCscTriggerPrimitiveDigis_*_*')
+outCommands.append('keep *_L1TMuonTriggerPrimitives_*_*')
+
 process.FEVTDEBUGoutput = cms.OutputModule("PoolOutputModule",
     splitLevel = cms.untracked.int32(0),
     eventAutoFlushCompressedSize = cms.untracked.int32(5242880),
-    outputCommands = process.FEVTDEBUGEventContent.outputCommands,
+    #outputCommands = process.FEVTDEBUGEventContent.outputCommands,
+	outputCommands = outCommands,
     fileName = cms.untracked.string('MuGun_test.root'),
     dataset = cms.untracked.PSet(
         filterName = cms.untracked.string(''),
@@ -92,13 +84,13 @@ process.GlobalTag = GlobalTag(process.GlobalTag, 'auto:mc', '')
 
 process.generator = cms.EDProducer("FlatRandomPtGunProducer",
 	PGunParameters = cms.PSet(
-        MinPt = cms.double(1),
+    MinPt = cms.double(1),
 	MaxPt = cms.double(100),
-        PartID = cms.vint32(-13),        
-        MaxPhi = cms.double(3.14159265359),
+    PartID = cms.vint32(-13),        
+    MaxPhi = cms.double(3.14159265359),
 	MinPhi = cms.double(-3.14159265359),
 	MaxEta = cms.double(-1.15),
-        MinEta = cms.double(-2.45)        
+    MinEta = cms.double(-2.45)        
     ),
     Verbosity = cms.untracked.int32(0),
     psethack = cms.string('single mu pt 5to100'),
@@ -112,6 +104,7 @@ process.generation_step = cms.Path(process.pgen)
 process.simulation_step = cms.Path(process.psim)
 process.digitisation_step = cms.Path(process.pdigi)
 process.L1simulation_step = cms.Path(process.SimL1Emulator)
+process.L1TMuonTP_step = cms.Path(process.L1TMuonTriggerPrimitives)
 process.genfiltersummary_step = cms.EndPath(process.genFilterSummary)
 process.endjob_step = cms.EndPath(process.endOfProcess)
 process.FEVTDEBUGoutput_step = cms.EndPath(process.FEVTDEBUGoutput)
@@ -122,10 +115,12 @@ process.schedule = cms.Schedule(process.generation_step,
 				process.simulation_step,
 				process.digitisation_step,
 				process.L1simulation_step,
+				process.L1TMuonTP_step,
 				process.endjob_step,
 				process.FEVTDEBUGoutput_step)
 # filter all path with the production filter sequence
 for path in process.paths:
 	getattr(process,path)._seq = process.generator * getattr(process,path)._seq 
 
-
+#from SLHCUpgradeSimulations.Configuration.muonCustoms import customise_csc_PostLS1
+#process = customise_csc_PostLS1(process)

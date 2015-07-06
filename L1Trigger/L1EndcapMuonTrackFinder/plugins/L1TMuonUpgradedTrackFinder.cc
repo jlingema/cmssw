@@ -27,6 +27,7 @@
 #include "Deltas.h"
 #include "BestTracks.h"
 #include "PtAssignment.h"
+#include "MakeRegionalCand.h"
 
 
 using namespace L1TMuon;
@@ -42,7 +43,8 @@ L1TMuonUpgradedTrackFinder::L1TMuonUpgradedTrackFinder(const PSet& p) {
     
     LUTparam = p.getParameter<edm::ParameterSet>("lutParam");
     
-    produces<L1TMuon::InternalTrackCollection> ("DataITC").setBranchAlias("DataITC");
+   // produces<L1TMuon::InternalTrackCollection> ("DataITC").setBranchAlias("DataITC");
+	produces<l1t::L1TRegionalMuonCandidateCollection >("EMUTF");
 }
 
 
@@ -52,12 +54,13 @@ void L1TMuonUpgradedTrackFinder::produce(edm::Event& ev,
   bool verbose = false;
 			       
  		
-  std::cout<<"Start Upgraded Track Finder Producer::::: event = "<<ev.id().event()<<"\n\n";
+  //std::cout<<"Start Upgraded Track Finder Producer::::: event = "<<ev.id().event()<<"\n\n";
   
   //fprintf (write,"12345\n"); //<-- part of printing text file to send verilog code, not needed if George's package is included
   
   
   std::auto_ptr<L1TMuon::InternalTrackCollection> FoundTracks (new L1TMuon::InternalTrackCollection);
+  std::auto_ptr<l1t::L1TRegionalMuonCandidateCollection > OutputCands (new l1t::L1TRegionalMuonCandidateCollection);
   
   std::vector<BTrack> PTracks[12];
  
@@ -79,7 +82,7 @@ void L1TMuonUpgradedTrackFinder::produce(edm::Event& ev,
 	double pt = GenMuon.pt(), eta = GenMuon.eta(), phi = GenMuon.phi(), mass = GenMuon.mass();
 	int charge = GenMuon.charge();
 	
-	std::cout<<"Gen Particle Info::::\nPt = "<<pt<<", phi = "<<phi<<", eta = "<<eta<<", mass = "<<mass<<" and charge = "<<charge<<"\n\n";
+	if(verbose) std::cout<<"Gen Particle Info::::\nPt = "<<pt<<", phi = "<<phi<<", eta = "<<eta<<", mass = "<<mass<<" and charge = "<<charge<<"\n\n";
 		
   }
   
@@ -103,7 +106,7 @@ void L1TMuonUpgradedTrackFinder::produce(edm::Event& ev,
 		
 		tester.push_back(tpref);
 		
-		std::cout<<"\ntrigger prim found station:"<<tp->detId<CSCDetId>().station()<<std::endl;
+		if(verbose) std::cout<<"\ntrigger prim found station:"<<tp->detId<CSCDetId>().station()<<std::endl;
       }
  
      }    
@@ -165,7 +168,7 @@ for(int SectIndex=0;SectIndex<12;SectIndex++){//perform TF on all 12 sectors
   
   PatternOutput Test = DeleteDuplicatePatterns(Pout);
  
-  PrintQuality(Test.detected);
+  //PrintQuality(Test.detected);
  
 
   ///////////////////////////////
@@ -191,7 +194,7 @@ for(int SectIndex=0;SectIndex<12;SectIndex++){//perform TF on all 12 sectors
   ////////    ph and th    //////// stations present. 
   /////////////////////////////////
   
-  
+
  std::vector<std::vector<DeltaOutput>> Dout = CalcDeltas(Mout);////
  
 
@@ -199,7 +202,7 @@ for(int SectIndex=0;SectIndex<12;SectIndex++){//perform TF on all 12 sectors
   /////// Sorts and gives /////////  Loops over all of the found tracks(looking across zones) and selects the best three per sector. 
   ////// Best 3 tracks/sector /////  Here ghost busting is done to delete tracks which are comprised of the same associated stubs. 
   /////////////////////////////////  
-  
+
   
   std::vector<BTrack> Bout = BestTracks(Dout);
    PTracks[SectIndex] = Bout;
@@ -207,6 +210,7 @@ for(int SectIndex=0;SectIndex<12;SectIndex++){//perform TF on all 12 sectors
   
   	
   }
+ 	
  
  ////////////////////////////////////
  //// Ghost Cancellation between ////not done correctly
@@ -262,7 +266,7 @@ for(int SectIndex=0;SectIndex<12;SectIndex++){//perform TF on all 12 sectors
  	}
  }
  
- 
+
  ////////////////////////////////////
  /// Sorting through all sectors ////
  ///   to find 4 best muons      ////
@@ -295,12 +299,13 @@ for(int SectIndex=0;SectIndex<12;SectIndex++){//perform TF on all 12 sectors
 
  	}
 }
+
   ///////////////////////////////////
   /// Make Internal track if ////////
   /////// tracks are found //////////
   ///////////////////////////////////
 
-  //bool epir = false;
+  //bool epir = false;//
   
   for(int fbest=0;fbest<4;fbest++){
   
@@ -316,6 +321,7 @@ for(int SectIndex=0;SectIndex<12;SectIndex++){//perform TF on all 12 sectors
 		tempTrack.rank = FourBest[fbest].winner.Rank();
 		tempTrack.deltas = FourBest[fbest].deltas;
 		std::vector<int> ps, ts;
+		int sector = -1;
 		
 		for(std::vector<ConvertedHit>::iterator A = FourBest[fbest].AHits.begin();A != FourBest[fbest].AHits.end();A++){
 		
@@ -324,6 +330,7 @@ for(int SectIndex=0;SectIndex<12;SectIndex++){//perform TF on all 12 sectors
 				tempTrack.addStub(A->TP());
 				ps.push_back(A->Phi());
 				ts.push_back(A->Theta());
+				sector = (A->TP()->detId<CSCDetId>().endcap() -1)*6 + A->TP()->detId<CSCDetId>().triggerSector() - 1;
 				//std::cout<<"Q: "<<A->Quality()<<", keywire: "<<A->Wire()<<", strip: "<<A->Strip()<<std::endl;
 			}
 			
@@ -331,19 +338,25 @@ for(int SectIndex=0;SectIndex<12;SectIndex++){//perform TF on all 12 sectors
 		tempTrack.phis = ps;
 		tempTrack.thetas = ts;
 		
-		std::cout<<"\n\nTrack "<<fbest<<": ";
-		//CalculatePt(tempTrack);
-		tempTrack.pt = CalculatePt(tempTrack);
-		std::cout<<"XML pT = "<<tempTrack.pt<<"\n";
+		if(verbose) std::cout<<"\n\nTrack "<<fbest<<": ";
+		float xmlpt = CalculatePt(tempTrack);
+		tempTrack.pt = xmlpt;
+		if(verbose) std::cout<<"XML pT = "<<tempTrack.pt<<"\n";
 		FoundTracks->push_back(tempTrack);
-		std::cout<<"\n\n";
+		if(verbose) std::cout<<"\n\n";
+		
+		
+		l1t::L1TRegionalMuonCandidate outCand = MakeRegionalCand(xmlpt,FourBest[fbest].phi,FourBest[fbest].theta,
+														         1,FourBest[fbest].winner.Rank(),1,sector);
+																 
+		OutputCands->push_back(outCand);
 	}
   }
   
- 
  //  std::cout<<"Begin Put function\n\n";
-ev.put( FoundTracks, "DataITC");
-  std::cout<<"End Upgraded Track Finder Prducer:::::::::::::::::::::::::::\n:::::::::::::::::::::::::::::::::::::::::::::::::\n\n";
+//ev.put( FoundTracks, "DataITC");
+ev.put( OutputCands, "EMUTF");
+  //std::cout<<"End Upgraded Track Finder Prducer:::::::::::::::::::::::::::\n:::::::::::::::::::::::::::::::::::::::::::::::::\n\n";
 
 }//analyzer
 
