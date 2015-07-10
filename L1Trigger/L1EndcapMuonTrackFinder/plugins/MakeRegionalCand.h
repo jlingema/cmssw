@@ -15,7 +15,7 @@ int GetPackedEta(float theta, int sector){
 
 	float scale = 1/0.010875;
 	
-	float theta_angle = (theta*0.851562 + 8.5)*(3.14159265359/180);
+	float theta_angle = (theta*0.2851562 + 8.5)*(3.14159265359/180);
 	float eta = (-1)*log(tan(theta_angle/2));
 	if(sector > 5)
 		eta *= -1;
@@ -30,8 +30,8 @@ int GetPackedEta(float theta, int sector){
 	if(PackedEta < -240)
 		PackedEta = -240;
 
-	if(PackedEta < 0)
-		PackedEta = 512 + PackedEta;
+	//if(PackedEta < 0)
+	//	PackedEta = 512 + PackedEta;
 
 	return PackedEta;
 
@@ -45,8 +45,8 @@ int GetPackedPhi(int phi){
 	
 	int PackedPhi = phiDeg/0.625;
 	
-	if(PackedPhi < 0)
-		PackedPhi = 256 + PackedPhi;
+	//if(PackedPhi < 0)
+	//	PackedPhi = 256 + PackedPhi;
 	
 	return PackedPhi;
 
