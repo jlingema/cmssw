@@ -31,28 +31,28 @@ if verbose:
                                         ,'HCAL'
         ),
        critical       = cms.untracked.PSet(
-                        threshold = cms.untracked.string('ERROR') 
+                        threshold = cms.untracked.string('ERROR')
         ),
        detailedInfo   = cms.untracked.PSet(
-                      threshold  = cms.untracked.string('INFO'), 
-                      CondDBESSource  = cms.untracked.PSet (limit = cms.untracked.int32(0) ), 
-                      EventSetupDependency  = cms.untracked.PSet (limit = cms.untracked.int32(0) ), 
-                      Geometry  = cms.untracked.PSet (limit = cms.untracked.int32(0) ), 
-                      MuonGeom  = cms.untracked.PSet (limit = cms.untracked.int32(0) ), 
-                      Alignment  = cms.untracked.PSet (limit = cms.untracked.int32(0) ), 
-                      GetManyWithoutRegistration  = cms.untracked.PSet (limit = cms.untracked.int32(0) ), 
-                      GetByLabelWithoutRegistration  = cms.untracked.PSet (limit = cms.untracked.int32(0) ) 
+                      threshold  = cms.untracked.string('INFO'),
+                      CondDBESSource  = cms.untracked.PSet (limit = cms.untracked.int32(0) ),
+                      EventSetupDependency  = cms.untracked.PSet (limit = cms.untracked.int32(0) ),
+                      Geometry  = cms.untracked.PSet (limit = cms.untracked.int32(0) ),
+                      MuonGeom  = cms.untracked.PSet (limit = cms.untracked.int32(0) ),
+                      Alignment  = cms.untracked.PSet (limit = cms.untracked.int32(0) ),
+                      GetManyWithoutRegistration  = cms.untracked.PSet (limit = cms.untracked.int32(0) ),
+                      GetByLabelWithoutRegistration  = cms.untracked.PSet (limit = cms.untracked.int32(0) )
 
        ),
        cout   = cms.untracked.PSet(
-                threshold  = cms.untracked.string('INFO'), 
-                CondDBESSource  = cms.untracked.PSet (limit = cms.untracked.int32(0) ), 
-                EventSetupDependency  = cms.untracked.PSet (limit = cms.untracked.int32(0) ), 
-                Geometry  = cms.untracked.PSet (limit = cms.untracked.int32(0) ), 
-                MuonGeom  = cms.untracked.PSet (limit = cms.untracked.int32(0) ), 
-                Alignment  = cms.untracked.PSet (limit = cms.untracked.int32(0) ), 
-                GetManyWithoutRegistration  = cms.untracked.PSet (limit = cms.untracked.int32(0) ), 
-                GetByLabelWithoutRegistration  = cms.untracked.PSet (limit = cms.untracked.int32(0) ) 
+                threshold  = cms.untracked.string('INFO'),
+                CondDBESSource  = cms.untracked.PSet (limit = cms.untracked.int32(0) ),
+                EventSetupDependency  = cms.untracked.PSet (limit = cms.untracked.int32(0) ),
+                Geometry  = cms.untracked.PSet (limit = cms.untracked.int32(0) ),
+                MuonGeom  = cms.untracked.PSet (limit = cms.untracked.int32(0) ),
+                Alignment  = cms.untracked.PSet (limit = cms.untracked.int32(0) ),
+                GetManyWithoutRegistration  = cms.untracked.PSet (limit = cms.untracked.int32(0) ),
+                GetByLabelWithoutRegistration  = cms.untracked.PSet (limit = cms.untracked.int32(0) )
                 ),
                                         )
 
@@ -84,18 +84,41 @@ process.load('L1Trigger.L1EndcapMuonTrackFinder.L1TMuonTriggerPrimitiveProducer_
 process.omtfEmulator = cms.EDProducer("OMTFProducer",
                                       TriggerPrimitiveSrc = cms.InputTag('L1TMuonTriggerPrimitives'),
                                       dumpResultToXML = cms.bool(False),
-                                      XMLDumpFileName = cms.string("TestEvents.xml"),                                     
-                                      dumpGPToXML = cms.bool(False),  
+                                      XMLDumpFileName = cms.string("TestEvents.xml"),
+                                      dumpGPToXML = cms.bool(False),
                                       readEventsFromXML = cms.bool(False),
                                       eventsXMLFiles = cms.vstring("TestEvents.xml"),
-                                      dropRPCPrimitives = cms.bool(False),                                    
-                                      dropDTPrimitives = cms.bool(False),                                    
-                                      dropCSCPrimitives = cms.bool(False),   
+                                      dropRPCPrimitives = cms.bool(False),
+                                      dropDTPrimitives = cms.bool(False),
+                                      dropCSCPrimitives = cms.bool(False),
                                       omtf = cms.PSet(
         configXMLFile = cms.string(path+"hwToLogicLayer_721_5760.xml"),
         patternsXMLFiles = cms.vstring(path+"Patterns_ipt4_31_5760.xml"),
         )
                                       )
+
+process.L1TMuonEndcapTrackFinder = cms.EDProducer(
+    'L1TMuonUpgradedTrackFinder',
+    doGen = cms.untracked.bool(True),
+    genSrc = cms.untracked.InputTag("genParticles"),
+    primitiveSrcs = cms.VInputTag(
+    cms.InputTag('L1TMuonTriggerPrimitives','CSC'),
+    cms.InputTag('L1TMuonTriggerPrimitives','DT'),
+    cms.InputTag('L1TMuonTriggerPrimitives','RPC')
+    ),
+    converterSrcs = cms.VInputTag(
+    cms.InputTag('L1CSCTFTrackConverter'),
+    cms.InputTag('L1DTTFTrackConverter'),
+    cms.InputTag('L1RPCbTFTrackConverter'),
+    cms.InputTag('L1RPCfTFTrackConverter'),
+    cms.InputTag('L1TMuonSimpleDeltaEtaHitMatcher')
+    ),
+    lutParam = cms.PSet(
+    isBeamStartConf = cms.untracked.bool(True),
+    ReadPtLUT = cms.bool(False),
+    PtMethod = cms.untracked.uint32(32)
+    )
+)
 
 process.uGMTInputProducer = cms.EDProducer("l1t::uGMTInputProducerFromGen",
 )
@@ -103,21 +126,26 @@ process.uGMTInputProducer = cms.EDProducer("l1t::uGMTInputProducerFromGen",
 process.load("L1Trigger.L1TMuon.microgmtemulator_cfi")
 
 process.microGMTEmulator.overlapTFInput = cms.InputTag("omtfEmulator", "OMTF")
+process.microGMTEmulator.forwardTFInput = cms.InputTag("L1TMuonEndcapTrackFinder", "EMUTF")
 
 process.L1TMuonSeq = cms.Sequence( process.L1TMuonTriggerPrimitives +
                                    # process.emtfEmulator +
                                    process.omtfEmulator +
+                                   process.L1TMuonEndcapTrackFinder +
                                    process.uGMTInputProducer +
                                    process.microGMTEmulator)
                                    #  +
-                                   # process.emtfEmulator + 
+                                   # process.emtfEmulator +
                                    # process.bmtfEmulator +
                                    # process.caloEmulator)
 
 process.L1TMuonPath = cms.Path(process.L1TMuonSeq)
 
 
-process.out = cms.OutputModule("PoolOutputModule", 
+process.out = cms.OutputModule("PoolOutputModule",
+    outputCommands = cms.untracked.vstring(
+              'drop *',
+              'keep *_*_*_L1TMuonEmulation'),
    fileName = cms.untracked.string("l1tmuon_test.root"),
                                )
 

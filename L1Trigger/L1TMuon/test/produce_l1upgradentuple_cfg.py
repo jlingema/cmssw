@@ -45,7 +45,7 @@ if verbose:
 
        ),
        cout   = cms.untracked.PSet(
-                threshold  = cms.untracked.string('INFO'),
+                threshold  = cms.untracked.string('WARNING'),
                 CondDBESSource  = cms.untracked.PSet (limit = cms.untracked.int32(0) ),
                 EventSetupDependency  = cms.untracked.PSet (limit = cms.untracked.int32(0) ),
                 Geometry  = cms.untracked.PSet (limit = cms.untracked.int32(0) ),
@@ -54,7 +54,7 @@ if verbose:
                 GetManyWithoutRegistration  = cms.untracked.PSet (limit = cms.untracked.int32(0) ),
                 GetByLabelWithoutRegistration  = cms.untracked.PSet (limit = cms.untracked.int32(0) )
                 ),
-                                        )
+)
 
 if not verbose:
     process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32(5000)
@@ -108,7 +108,7 @@ process.source = cms.Source(
       )
     )
 
-process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(-1))
+process.maxEvents = cms.untracked.PSet( input = cms.untracked.int32(5000))
 
 ###PostLS1 geometry used
 process.load('Configuration.Geometry.GeometryExtendedPostLS1Reco_cff')
@@ -142,11 +142,47 @@ process.omtfEmulator = cms.EDProducer("OMTFProducer",
 process.uGMTInputProducer = cms.EDProducer("l1t::uGMTInputProducerFromGen",
 )
 
+process.L1TMuonEndcapTrackFinder = cms.EDProducer(
+    'L1TMuonUpgradedTrackFinder',
+    doGen = cms.untracked.bool(True),
+    genSrc = cms.untracked.InputTag("genParticles"),
+    primitiveSrcs = cms.VInputTag(
+    cms.InputTag('L1TMuonTriggerPrimitives','CSC'),
+    cms.InputTag('L1TMuonTriggerPrimitives','DT'),
+    cms.InputTag('L1TMuonTriggerPrimitives','RPC')
+    ),
+    converterSrcs = cms.VInputTag(
+    cms.InputTag('L1CSCTFTrackConverter'),
+    cms.InputTag('L1DTTFTrackConverter'),
+    cms.InputTag('L1RPCbTFTrackConverter'),
+    cms.InputTag('L1RPCfTFTrackConverter'),
+    cms.InputTag('L1TMuonSimpleDeltaEtaHitMatcher')
+    ),
+    lutParam = cms.PSet(
+    isBeamStartConf = cms.untracked.bool(True),
+    ReadPtLUT = cms.bool(False),
+    PtMethod = cms.untracked.uint32(32)
+    )
+)
+
+process.load("L1TriggerDPG.L1Ntuples.l1NtupleProducer_cfi")
+process.load("L1TriggerDPG.L1Ntuples.l1RecoTreeProducer_cfi")
+process.load("L1TriggerDPG.L1Ntuples.l1ExtraTreeProducer_cfi")
+process.load("L1TriggerDPG.L1Ntuples.l1MuonRecoTreeProducer_cfi")
+process.load("L1TriggerDPG.L1Ntuples.l1MuonUpgradeTreeProducer_cfi")
+
 process.load("L1Trigger.L1TMuon.microgmtemulator_cfi")
 
 process.microGMTEmulator.overlapTFInput = cms.InputTag("omtfEmulator", "OMTF")
+process.l1MuonUpgradeTreeProducer.omtfTag = cms.InputTag("omtfEmulator", "OMTF")
+process.microGMTEmulator.forwardTFInput = cms.InputTag("L1TMuonEndcapTrackFinder", "EMUTF")
+process.l1MuonUpgradeTreeProducer.emtfTag = cms.InputTag("L1TMuonEndcapTrackFinder", "EMUTF")
 
-
+#disable pre-loaded cancel-out lookup tables (they currently contain only 0)
+process.microGMTEmulator.OvlNegSingleMatchQualLUTSettings.filename = cms.string("")
+process.microGMTEmulator.OvlPosSingleMatchQualLUTSettings.filename = cms.string("")
+process.microGMTEmulator.FOPosMatchQualLUTSettings.filename = cms.string("")
+process.microGMTEmulator.FONegMatchQualLUTSettings.filename = cms.string("")
 # output file
 process.TFileService = cms.Service("TFileService",
     fileName = cms.string('l1ntuple.root')
@@ -156,11 +192,7 @@ process.load('Configuration.StandardSequences.SimL1Emulator_cff')
 process.load("Configuration.StandardSequences.RawToDigi_cff")
 
 # analysis
-process.load("L1TriggerDPG.L1Ntuples.l1NtupleProducer_cfi")
-process.load("L1TriggerDPG.L1Ntuples.l1RecoTreeProducer_cfi")
-process.load("L1TriggerDPG.L1Ntuples.l1ExtraTreeProducer_cfi")
-process.load("L1TriggerDPG.L1Ntuples.l1MuonRecoTreeProducer_cfi")
-process.load("L1TriggerDPG.L1Ntuples.l1MuonUpgradeTreeProducer_cfi")
+
 
 process.l1NtupleProducer.hltSource            = cms.InputTag("none")
 process.l1NtupleProducer.gtSource             = cms.InputTag("none")
@@ -189,7 +221,6 @@ process.L1TMuonSeq = cms.Sequence(
     # +process.gctDigis
     # +process.dttfDigis
     # +process.csctfDigis
-    +process.l1NtupleProducer
     # +process.l1extraParticles
     # +process.l1ExtraTreeProducer
     # +process.l1GtTriggerMenuLite
@@ -197,10 +228,11 @@ process.L1TMuonSeq = cms.Sequence(
     # +process.l1RecoTreeProducer
     # +process.l1MuonRecoTreeProducer
     +process.L1TMuonTriggerPrimitives
-    # process.emtfEmulator +
     +process.omtfEmulator
+    +process.L1TMuonEndcapTrackFinder
     +process.uGMTInputProducer
     +process.microGMTEmulator
+    +process.l1NtupleProducer
     +process.l1MuonUpgradeTreeProducer
     )
     #  +
