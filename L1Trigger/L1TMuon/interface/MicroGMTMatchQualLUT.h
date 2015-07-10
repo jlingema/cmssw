@@ -26,8 +26,8 @@ namespace l1t {
         int getDeltaEtaWidth() const { return m_dEtaRedInWidth; }
         int getDeltaPhiWidth() const { return m_dPhiRedInWidth; }
       private:
-        int m_dEtaRedMask; 
-        int m_dPhiRedMask; 
+        int m_dEtaRedMask;
+        int m_dPhiRedMask;
         int m_dEtaRedInWidth;
         int m_dPhiRedInWidth;
 
@@ -35,6 +35,7 @@ namespace l1t {
         double m_phiScale;
 
         cancel_t m_cancelType;
+        std::string m_name;
     };
 }
 #endif /* defined(__l1microgmtmatchquallut_h) */
