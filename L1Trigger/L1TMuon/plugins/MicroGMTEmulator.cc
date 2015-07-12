@@ -190,6 +190,7 @@ l1t::MicroGMTEmulator::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
 
   // this converts the InputMuon type to the InternalMuon type and splits them into
   // positive / negative eta collections necessary as LUTs may differ for pos / neg.
+
   convertMuons(bmtfMuons, internMuonsBmtf, bmtfWedges);
   splitAndConvertMuons(emtfMuons, internMuonsEmtfPos, internMuonsEmtfNeg, emtfPosWedges, emtfNegWedges);
   splitAndConvertMuons(omtfMuons, internMuonsOmtfPos, internMuonsOmtfNeg, omtfPosWedges, omtfNegWedges);
@@ -222,6 +223,7 @@ l1t::MicroGMTEmulator::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
   calculateRank(internMuonsOmtfPos);
 
   // The sort function both sorts and removes all but best "nSurvivors"
+
   sortMuons(internMuonsBmtf, 8);
   sortMuons(internMuonsOmtfPos, 4);
   sortMuons(internMuonsOmtfNeg, 4);
@@ -326,6 +328,7 @@ l1t::MicroGMTEmulator::addMuonsToCollections(MicroGMTConfiguration::InterMuonLis
     ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > vec{};
     // FIXME: once we debugged the change global -> local: Change hwLocalPhi -> hwGlobalPhi to test offsets
     Muon outMu{vec, mu->originRef(), mu->hwPt(), mu->hwEta(), mu->hwGlobalPhi(), mu->hwQual(), mu->hwSign(), mu->hwSignValid(), -1, 0, true, -1, mu->hwDPhi(), mu->hwDEta(), mu->hwRank()};
+
     out->push_back(0, outMu);
   }
 }
@@ -347,16 +350,25 @@ l1t::MicroGMTEmulator::splitAndConvertMuons(const edm::Handle<MicroGMTConfigurat
   for (size_t i = 0; i < in->size(); ++i) {
     if(in->at(i).hwEta() > 0) {
       std::shared_ptr<L1TGMTInternalMuon> out = std::make_shared<L1TGMTInternalMuon>(in, i);
+      if (out->trackFinderType() == tftype::emtf_neg) {
+        out->setTFType(tftype::emtf_pos);
+      }
       out_pos.push_back(out);
       wedges_pos[in->at(i).processor()].push_back(out);
     } else {
       std::shared_ptr<L1TGMTInternalMuon> out = std::make_shared<L1TGMTInternalMuon>(in, i);
       if (out->trackFinderType() == tftype::omtf_pos) {
         out->setTFType(tftype::omtf_neg);
+      } else if (out->trackFinderType() == tftype::emtf_pos) {
+        out->setTFType(tftype::emtf_neg);
       }
       out_neg.emplace_back(out);
       wedges_neg[in->at(i).processor()].push_back(out);
     }
+  }
+  for (int i = 1; i <= 12; ++i) {
+    if(wedges_pos[i].size() > 3) edm::LogWarning("Input Mismatch") << " too many inputs per processor for emtf+ / omtf+" << std::endl;
+    if(wedges_neg[i].size() > 3) edm::LogWarning("Input Mismatch") << " too many inputs per processor for emtf- / omtf-" << std::endl;
   }
 }
 
@@ -370,10 +382,13 @@ l1t::MicroGMTEmulator::convertMuons(const edm::Handle<MicroGMTConfiguration::Inp
     wedges[i] = std::vector<std::shared_ptr<L1TGMTInternalMuon>>();
     wedges[i].reserve(3);
   }
-  for (size_t i = 1; i < in->size(); ++i) {
+  for (size_t i = 0; i < in->size(); ++i) {
     std::shared_ptr<L1TGMTInternalMuon> outMu = std::make_shared<L1TGMTInternalMuon>(in, i);
     out.emplace_back(outMu);
     wedges[in->at(i).processor()].push_back(outMu);
+  }
+  for (int i = 1; i <= 12; ++i) {
+    if(wedges[i].size() > 3) edm::LogWarning("Input Mismatch") << " too many inputs per processor for barrel" << std::endl;
   }
 }
 
