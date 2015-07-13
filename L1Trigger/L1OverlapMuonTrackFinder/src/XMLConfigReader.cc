@@ -368,14 +368,14 @@ void XMLConfigReader::readConfig(OMTFConfiguration *aConfig){
 	      OMTFConfiguration::refHitsDefs[iProcessor].begin()+starts[4], tmp.begin()+offset);
 
     offset +=starts[4]-starts[3];
-    std::copy(OMTFConfiguration::refHitsDefs[iProcessor].begin()+starts[2], 
-	      OMTFConfiguration::refHitsDefs[iProcessor].begin()+starts[3], tmp.begin()+offset);
-
-    offset +=starts[3]-starts[2];
     std::copy(OMTFConfiguration::refHitsDefs[iProcessor].begin()+starts[4], 
 	      OMTFConfiguration::refHitsDefs[iProcessor].begin()+starts[5], tmp.begin()+offset);
 
     offset +=starts[5]-starts[4];
+    std::copy(OMTFConfiguration::refHitsDefs[iProcessor].begin()+starts[2], 
+	      OMTFConfiguration::refHitsDefs[iProcessor].begin()+starts[3], tmp.begin()+offset);
+
+    offset +=starts[3]-starts[2];
     std::copy(OMTFConfiguration::refHitsDefs[iProcessor].begin()+starts[6], 
 	      OMTFConfiguration::refHitsDefs[iProcessor].begin()+starts[7], tmp.begin()+offset);
 
@@ -390,7 +390,7 @@ void XMLConfigReader::readConfig(OMTFConfiguration *aConfig){
     }
     std::cout<<"------------"<<std::endl;
     */
-    OMTFConfiguration::refHitsDefs[iProcessor] = tmp;    
+    //OMTFConfiguration::refHitsDefs[iProcessor] = tmp;    
     ///////////
 
     ///////////

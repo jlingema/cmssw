@@ -76,7 +76,8 @@ bool  OMTFinputMaker::acceptDigi(uint32_t rawId,
   }
   case MuonSubdetId::CSC: {
     CSCDetId csc(rawId);    
-    
+
+    if(csc.endcap()==2) return false;    
     if(csc.station()==2 && csc.ring()==1) return false;
     if(csc.station()==3 && csc.ring()==1) return false;
     if(csc.station()==4) return false;

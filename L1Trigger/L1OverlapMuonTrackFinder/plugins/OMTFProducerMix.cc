@@ -50,6 +50,7 @@ OMTFProducerMix::OMTFProducerMix(const edm::ParameterSet& cfg):
   eventsToMix = theConfig.getParameter<unsigned int>("eventsToMix");
 
   myOMTFConfig = 0;
+  myEventNumber = 0;
 }
 /////////////////////////////////////////////////////
 /////////////////////////////////////////////////////
@@ -89,6 +90,9 @@ void OMTFProducerMix::endJob(){
 /////////////////////////////////////////////////////  
 void OMTFProducerMix::produce(edm::Event& iEvent, const edm::EventSetup& evSetup){
 
+  ++myEventNumber;
+  unsigned int eventToSave = 252;
+  
   myInputMaker->initialize(evSetup);
 
   edm::Handle<TriggerPrimitiveCollection> trigPrimitives;
@@ -102,7 +106,7 @@ void OMTFProducerMix::produce(edm::Event& iEvent, const edm::EventSetup& evSetup
   ///Loop over events to be mixed with current EDM event
   for(unsigned int iEventMix=0;iEventMix<=2*eventsToMix;++iEventMix){
     edm::LogInfo("OMTFOMTFProducerMix")<<"iMix: "<<iEventMix;
-    if(dumpResultToXML) aTopElement = myWriter->writeEventHeader(iEvent.id().event(), iEventMix);
+    if(dumpResultToXML && myEventNumber==eventToSave && iEventMix==4) aTopElement = myWriter->writeEventHeader(iEvent.id().event(), iEventMix);
 
     ///Loop over all processors, each covering 60 deg in phi
     for(unsigned int iProcessor=0;iProcessor<6;++iProcessor){
@@ -147,7 +151,7 @@ void OMTFProducerMix::produce(edm::Event& iEvent, const edm::EventSetup& evSetup
       edm::LogInfo("OMTFOMTFProducerMix")<<" Number of candidates: "<<myOTFCandidates.size();
 
       ///Write to XML
-      if(dumpResultToXML){
+      if(dumpResultToXML && myEventNumber==eventToSave && iEventMix==4){
 	xercesc::DOMElement * aProcElement = myWriter->writeEventData(aTopElement,iProcessor,myShiftedInput);
 	for(unsigned int iRefHit=0;iRefHit<OMTFConfiguration::nTestRefHits;++iRefHit){
 	  ///Dump only regions, where a candidate was found
@@ -163,7 +167,6 @@ void OMTFProducerMix::produce(edm::Event& iEvent, const edm::EventSetup& evSetup
   edm::LogInfo("OMTFOMTFProducerMix")<<" Number of candidates: "<<myCands->size();
 
   iEvent.put(myCands, "OMTF");  
-
 }
 /////////////////////////////////////////////////////
 /////////////////////////////////////////////////////  

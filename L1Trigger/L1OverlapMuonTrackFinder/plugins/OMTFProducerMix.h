@@ -64,6 +64,7 @@ class OMTFProducerMix : public edm::EDProducer {
   XMLConfigWriter *myWriter; 
   XMLConfigReader *myReader; 
   ///
+  unsigned int myEventNumber;
   unsigned int eventsToMix;
   bool dumpResultToXML;
   TRandom3 aRndm;
