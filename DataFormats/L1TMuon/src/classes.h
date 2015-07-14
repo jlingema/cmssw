@@ -19,6 +19,7 @@
 #include "DataFormats/L1TMuon/interface/L1TGMTInputCaloSum.h"
 #include "DataFormats/L1TMuon/interface/L1TRegionalMuonCandidateFwd.h"
 #include "DataFormats/L1TMuon/interface/L1TRegionalMuonCandidate.h"
+#include "DataFormats/L1TMuon/interface/L1TGMTInternalMuon.h"
 
 namespace {
   using namespace L1TMuon;
@@ -29,6 +30,9 @@ namespace {
     l1t::L1TRegionalMuonCandidateCollection regCandColl;
     edm::Wrapper<l1t::L1TRegionalMuonCandidateCollection> regCandWrap;
     edm::Ref<l1t::L1TRegionalMuonCandidateCollection> regRef;
+
+    l1t::L1TGMTInternalMuon internalMuon;
+    edm::Wrapper<l1t::L1TGMTInternalMuon> internalMuonWrap;
 
 
     // trigger primitive information

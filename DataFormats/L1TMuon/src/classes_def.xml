@@ -63,6 +63,9 @@
   <class name="edm::Wrapper<l1t::L1TGMTInputCaloSumCollection>"/>
   <class name="edm::Ref<l1t::L1TRegionalMuonCandidateCollection>"/>
 
+  <class name="l1t::L1TGMTInternalMuon"/>
+  <class name="edm::Wrapper<l1t::L1TGMTInternalMuon>"/>
+
 
   <class name="edm::reftobase::BaseHolder<L1MuRegionalCand>"/>
   <class name="edm::reftobase::Holder<L1MuRegionalCand,L1TMuon::RegionalCandRef>"/>
