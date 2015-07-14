@@ -350,18 +350,10 @@ l1t::MicroGMTEmulator::splitAndConvertMuons(const edm::Handle<MicroGMTConfigurat
   for (size_t i = 0; i < in->size(); ++i) {
     if(in->at(i).hwEta() > 0) {
       std::shared_ptr<L1TGMTInternalMuon> out = std::make_shared<L1TGMTInternalMuon>(in, i);
-      if (out->trackFinderType() == tftype::emtf_neg) {
-        out->setTFType(tftype::emtf_pos);
-      }
       out_pos.push_back(out);
       wedges_pos[in->at(i).processor()].push_back(out);
     } else {
       std::shared_ptr<L1TGMTInternalMuon> out = std::make_shared<L1TGMTInternalMuon>(in, i);
-      if (out->trackFinderType() == tftype::omtf_pos) {
-        out->setTFType(tftype::omtf_neg);
-      } else if (out->trackFinderType() == tftype::emtf_pos) {
-        out->setTFType(tftype::emtf_neg);
-      }
       out_neg.emplace_back(out);
       wedges_neg[in->at(i).processor()].push_back(out);
     }
