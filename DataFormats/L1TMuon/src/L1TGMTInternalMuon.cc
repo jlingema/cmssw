@@ -13,19 +13,7 @@ L1TGMTInternalMuon::L1TGMTInternalMuon(const edm::Handle<L1TRegionalMuonCandidat
 	m_regional(regional, index), m_hwRank(0), m_hwCancelBit(0), m_hwIsoSum(0), m_hwDeltaEta(0), m_hwDeltaPhi(0), m_hwAbsIso(-1), m_hwRelIso(-1), m_hwGlobalPhi(-1)
 {
   m_realtype = m_regional->trackFinderType();
-  if (m_regional->trackFinderType() == bmtf) {
-      // each BMTF processor corresponds to a 30 degree wedge = 48 in int-scale
-      m_hwGlobalPhi = (m_regional->processor() - 1) * 48 + m_regional->hwPhi();
-      // first processor starts at CMS phi = -15 degrees...
-      m_hwGlobalPhi += 576-24;
-      // handle wrap-around (since we add the 576-24, the value will never be negative!)
-      m_hwGlobalPhi = m_hwGlobalPhi%576;
-  } else {
-      // all others correspond to 60 degree sectors = 96 in int-scale
-      m_hwGlobalPhi = (m_regional->processor() - 1) * 96 + m_regional->hwPhi();
-      // first processor starts at CMS phi = 15 degrees... Handle wrap-around with %:
-      m_hwGlobalPhi = (m_hwGlobalPhi + 24) % 576;
-  }
+  m_hwGlobalPhi = calcGlobalPhi(m_regional->hwPhi(), m_realtype, m_regional->processor());
 }
 
 void
@@ -35,4 +23,22 @@ L1TGMTInternalMuon::setExtrapolation(int deta, int dphi)
   m_hwDeltaPhi = dphi;
 }
 
+int
+L1TGMTInternalMuon::calcGlobalPhi(int locPhi, tftype t, int proc) {
+  int globPhi = 0;
+  if (t == bmtf) {
+      // each BMTF processor corresponds to a 30 degree wedge = 48 in int-scale
+      globPhi = (proc - 1) * 48 + locPhi;
+      // first processor starts at CMS phi = -15 degrees...
+      globPhi += 576-24;
+      // handle wrap-around (since we add the 576-24, the value will never be negative!)
+      globPhi = globPhi%576;
+  } else {
+      // all others correspond to 60 degree sectors = 96 in int-scale
+      globPhi = (proc - 1) * 96 + locPhi;
+      // first processor starts at CMS phi = 15 degrees... Handle wrap-around with %:
+      globPhi = (globPhi + 24) % 576;
+  }
+  return globPhi;
+}
 } // namespace l1t

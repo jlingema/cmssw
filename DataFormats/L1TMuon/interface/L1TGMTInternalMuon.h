@@ -11,6 +11,7 @@ class L1TGMTInternalMuon {
   public:
     explicit L1TGMTInternalMuon(const edm::Handle<L1TRegionalMuonCandidateCollection>&, size_t);
     L1TGMTInternalMuon(const L1TGMTInternalMuon&);
+    L1TGMTInternalMuon() {};
 
     virtual ~L1TGMTInternalMuon() {};
 
@@ -25,6 +26,8 @@ class L1TGMTInternalMuon {
     void setHwCaloEta(int idx) { m_hwCaloIndex.second = idx; };
     void setHwCaloPhi(int idx) { m_hwCaloIndex.first = idx; };
     void setTFType(tftype type) { m_realtype = type; };
+
+    static int calcGlobalPhi(int locPhi, tftype t, int proc);
 
     const int hwCancelBit() const { return m_hwCancelBit; };
     const int hwRank() const { return m_hwRank; };
@@ -54,7 +57,6 @@ class L1TGMTInternalMuon {
     inline const int link() const { return m_regional->link(); }
 
   private:
-    L1TGMTInternalMuon();
 
     const edm::Ref<L1TRegionalMuonCandidateCollection> m_regional;
     int m_hwRank;
