@@ -28,7 +28,7 @@ L1TGMTInternalMuon::calcGlobalPhi(int locPhi, tftype t, int proc) {
   int globPhi = 0;
   if (t == bmtf) {
       // each BMTF processor corresponds to a 30 degree wedge = 48 in int-scale
-      globPhi = (proc - 1) * 48 + locPhi;
+      globPhi = (proc) * 48 + locPhi;
       // first processor starts at CMS phi = -15 degrees...
       globPhi += 576-24;
       // handle wrap-around (since we add the 576-24, the value will never be negative!)
