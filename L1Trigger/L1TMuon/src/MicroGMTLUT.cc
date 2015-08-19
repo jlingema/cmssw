@@ -76,22 +76,26 @@ l1t::MicroGMTLUT::checkedInput(unsigned in, unsigned maxWidth) const
 void
 l1t::MicroGMTLUT::contentsToStream(std::stringstream& stream)
 {
-  stream << "CONTENT : [ ";
+  stream << "\"CONTENT\" : [ ";
 
-  for (int in = 0; in < (1 << m_totalInWidth); ++in) {
-    stream << lookupPacked(in) << ", ";
+  int maxVal = (1<<m_totalInWidth);
+  for (int in = 0; in < maxVal; ++in) {
+    stream << lookupPacked(in);
+    if (in != maxVal - 1) {
+      stream << ", ";
+    }
   }
-  stream << " ] " << std::endl;
+  stream << "] " << std::endl;
 }
 
 void
 l1t::MicroGMTLUT::headerToStream(std::stringstream& stream) const
 {
   stream << "{" << std::endl;
-  stream << "NAME      : \"Name of the LUT\""<< std::endl;
-  stream << "INSTNACES : \"List (space separated) of instances of this LUT (differing contents but same in/output)\"" << std::endl;
-  stream << "INPUTS    : \"List (space separated) of inputs in format <input_name>(<input_width>)\"" << std::endl;
-  stream << "OUTPUTS   : \"List (space separated) of outputs in format <output_name>(<output_width>)\"" << std::endl;
-  stream << "IPBUS_ADD : \"Address for access via IPBus\"" << std::endl;
-  stream << "CONTENT_X : \"List (space separated) of outputs from packed int for zero-indexed instance X\"" << std::endl;
+  stream << "\"NAME\"      : \"Name of the LUT\","<< std::endl;
+  stream << "\"INSTNACES\" : \"List (space separated) of instances of this LUT (differing contents but same in/output)\"," << std::endl;
+  stream << "\"INPUTS\"    : \"List (space separated) of inputs in format <input_name>(<input_width>)\"," << std::endl;
+  stream << "\"OUTPUTS\"   : \"List (space separated) of outputs in format <output_name>(<output_width>)\"," << std::endl;
+  stream << "\"IPBUS_ADD\" : \"Address for access via IPBus\"," << std::endl;
+  stream << "\"CONTENT_X\" : \"List (space separated) of outputs from packed int for zero-indexed instance X\"," << std::endl;
 }

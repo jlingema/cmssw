@@ -135,8 +135,10 @@ process.bmtfEmulator = cms.EDProducer("BMTrackFinder",
 
                                       )
 
+process.uGMTCaloInputProducer = cms.EDProducer("l1t::uGMTCaloInputProducer",
+                                               caloStage2Layer2Label=cms.InputTag("caloStage2Layer1Digis"),
+)
 # WORKAROUNDS FOR WRONG SCALES / MISSING COLLECTIONS:
-process.uGMTInputProducer = cms.EDProducer("l1t::uGMTInputProducerFromGen",)
 process.bmtfConverter = cms.EDProducer("l1t::BMTFConverter",)
 process.omtfConverter = cms.EDProducer("l1t::OMTFConverter",)
 
@@ -163,6 +165,9 @@ process.microGMTEmulator.forwardTFInput = cms.InputTag("L1TMuonEndcapTrackFinder
 process.l1MuonUpgradeTreeProducer.emtfTag = cms.InputTag("L1TMuonEndcapTrackFinder", "EMUTF")
 process.microGMTEmulator.barrelTFInput = cms.InputTag("bmtfConverter", "ConvBMTFMuons")
 process.l1MuonUpgradeTreeProducer.bmtfTag = cms.InputTag("bmtfConverter", "ConvBMTFMuons")
+process.microGMTEmulator.triggerTowerInput = cms.InputTag("uGMTCaloInputProducer", "TriggerTowerSums")
+process.l1MuonUpgradeTreeProducer.calo2x2Tag = cms.InputTag("uGMTCaloInputProducer", "TriggerTower2x2s")
+process.l1MuonUpgradeTreeProducer.caloTag = cms.InputTag("caloStage2Layer1Digis")
 
 # disable pre-loaded cancel-out lookup tables (they currently contain only 0)
 process.microGMTEmulator.OvlNegSingleMatchQualLUTSettings.filename = cms.string("")
@@ -183,6 +188,9 @@ process.load('Configuration.StandardSequences.SimL1Emulator_cff')
 process.load("Configuration.StandardSequences.RawToDigi_cff")
 from SLHCUpgradeSimulations.Configuration.muonCustoms import customise_csc_PostLS1
 process = customise_csc_PostLS1(process)
+
+# upgrade calo stage 2
+process.load('L1Trigger.L1TCalorimeter.L1TCaloStage2_PPFromRaw_cff')
 
 # analysis
 process.l1NtupleProducer.hltSource = cms.InputTag("none")
@@ -206,6 +214,8 @@ process.l1NtupleProducer.csctfDTStubsSource = cms.InputTag("none")
 
 
 process.L1ReEmulSeq = cms.Sequence(process.SimL1Emulator
+                                   + process.ecalDigis
+                                   + process.hcalDigis
                                    + process.gtDigis
                                    + process.gtEvmDigis
                                    + process.csctfDigis
@@ -227,7 +237,8 @@ process.L1TMuonSeq = cms.Sequence(
     + process.omtfEmulator
     + process.omtfConverter
     + process.L1TMuonEndcapTrackFinder
-    + process.uGMTInputProducer
+    + process.L1TCaloStage2_PPFromRaw
+    + process.uGMTCaloInputProducer
     + process.microGMTEmulator
 )
 

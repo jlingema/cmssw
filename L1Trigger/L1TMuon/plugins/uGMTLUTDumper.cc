@@ -2,10 +2,10 @@
 //
 // Package:    uGMTLUTDumper
 // Class:      uGMTLUTDumper
-// 
+//
 /**\class uGMTLUTDumper uGMTLUTDumper.cc L1Trigger/L1TGlobalMuon/plugins/uGMTLUTDumper.cc
 
- Description: Takes txt-file input and produces barrel- / overlap- / forward TF muons 
+ Description: Takes txt-file input and produces barrel- / overlap- / forward TF muons
 
  Implementation:
      [Notes on implementation]
@@ -46,7 +46,7 @@ class uGMTLUTDumper : public edm::EDAnalyzer {
    public:
       explicit uGMTLUTDumper(const edm::ParameterSet&);
       ~uGMTLUTDumper();
-      virtual void analyze(const edm::Event&, const edm::EventSetup&);  
+      virtual void analyze(const edm::Event&, const edm::EventSetup&);
 
    private:
       void dumpLut(MicroGMTLUT*, const std::string&);
@@ -78,7 +78,7 @@ class uGMTLUTDumper : public edm::EDAnalyzer {
 //
 // constructors and destructor
 //
-uGMTLUTDumper::uGMTLUTDumper(const edm::ParameterSet& iConfig) : 
+uGMTLUTDumper::uGMTLUTDumper(const edm::ParameterSet& iConfig) :
     m_rankLUT(iConfig),
     m_boPosMatchQualLUT(iConfig, "BOPos", cancel_t::omtf_bmtf_pos),
     m_boNegMatchQualLUT(iConfig, "BONeg", cancel_t::omtf_bmtf_neg),
@@ -94,7 +94,7 @@ uGMTLUTDumper::uGMTLUTDumper(const edm::ParameterSet& iConfig) :
 
   //now do what ever other initialization is needed
   m_foldername = iConfig.getParameter<std::string> ("out_directory");
-  
+
 
 }
 
@@ -109,7 +109,7 @@ uGMTLUTDumper::~uGMTLUTDumper()
 //
 // member functions
 //
-void 
+void
 uGMTLUTDumper::dumpLut(MicroGMTLUT* lut, const std::string& oName) {
   std::ofstream fStream(m_foldername+oName);
   lut->save(fStream);
@@ -132,8 +132,8 @@ uGMTLUTDumper::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   dumpLut(&m_ovlPosSingleMatchQualLUT, std::string("/ovlPosSingleMatchQualLUT.json"));
   dumpLut(&m_ovlNegSingleMatchQualLUT, std::string("/ovlNegSingleMatchQualLUT.json"));
   dumpLut(&m_fwdPosSingleMatchQualLUT, std::string("/fwdPosSingleMatchQualLUT.json"));
-  dumpLut(&m_fwdNegSingleMatchQualLUT, std::string("/fedNegSingleMatchQualLUT.json"));
-  
+  dumpLut(&m_fwdNegSingleMatchQualLUT, std::string("/fwdNegSingleMatchQualLUT.json"));
+
 }
 
 } // namespace l1t
