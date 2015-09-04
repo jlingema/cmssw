@@ -2,7 +2,7 @@
 //
 // Package:    uGMTInputProducerFromGen
 // Class:      uGMTInputProducerFromGen
-// 
+//
 /**\class uGMTInputProducerFromGen uGMTInputProducerFromGen.cc L1Trigger/L1TGlobalMuon/plugins/uGMTInputProducerFromGen.cc
 
  Description: takes generated muons and fills them in the expected collections for the uGMT
@@ -58,14 +58,14 @@ class uGMTInputProducerFromGen : public edm::EDProducer {
       virtual void beginJob() ;
       virtual void produce(edm::Event&, const edm::EventSetup&);
       virtual void endJob() ;
-      
+
       virtual void beginRun(edm::Run&, edm::EventSetup const&);
       virtual void endRun(edm::Run&, edm::EventSetup const&);
       virtual void beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
       virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
 
       static bool compareMuons(const L1TRegionalMuonCandidate&, const L1TRegionalMuonCandidate&);
-     
+
       // ----------member data ---------------------------
       edm::EDGetTokenT <reco::GenParticleCollection> genParticlesToken;
       int m_currEvt;
@@ -85,7 +85,7 @@ class uGMTInputProducerFromGen : public edm::EDProducer {
 //
 // constructors and destructor
 //
-uGMTInputProducerFromGen::uGMTInputProducerFromGen(const edm::ParameterSet& iConfig) : 
+uGMTInputProducerFromGen::uGMTInputProducerFromGen(const edm::ParameterSet& iConfig) :
   m_currEvt(0), m_rnd(0)
 {
   //register your inputs:
@@ -109,8 +109,8 @@ uGMTInputProducerFromGen::~uGMTInputProducerFromGen()
 // member functions
 //
 
-bool 
-uGMTInputProducerFromGen::compareMuons(const L1TRegionalMuonCandidate& mu1, const L1TRegionalMuonCandidate& mu2) 
+bool
+uGMTInputProducerFromGen::compareMuons(const L1TRegionalMuonCandidate& mu1, const L1TRegionalMuonCandidate& mu2)
 {
   return mu1.processor() < mu2.processor();
 }
@@ -130,7 +130,7 @@ uGMTInputProducerFromGen::produce(edm::Event& iEvent, const edm::EventSetup& iSe
   std::vector<int> muIndices;
   edm::Handle<reco::GenParticleCollection> genParticles;
   // Make sure that you can get genParticles
-  if (iEvent.getByToken(genParticlesToken, genParticles)) { 
+  if (iEvent.getByToken(genParticlesToken, genParticles)) {
     int cntr = 0;
     for (auto it = genParticles->cbegin(); it != genParticles->cend(); ++it) {
       const reco::Candidate& mcParticle = *it;
@@ -144,17 +144,17 @@ uGMTInputProducerFromGen::produce(edm::Event& iEvent, const edm::EventSetup& iSe
 
   l1t::L1TRegionalMuonCandidate mu;
   l1t::L1TGMTInputCaloSum tSum;
-  // alternative scale (using full phi bit-width): 163.4521265553765f; 
+  // alternative scale (using full phi bit-width): 163.4521265553765f;
   const float phiToInt = 91.67324722093171f;
   // alternative scale: 100.0f;
-  const float etaToInt = 90.9090909090f; 
+  const float etaToInt = 90.9090909090f;
   const int maxPt = (1 << 9)-1;
   int muCntr = 0;
 
   double twoPi = TMath::Pi() * 2.;
 
   for (auto it = muIndices.begin(); it != muIndices.end(); ++it) {
-    // don't really care which muons are taken... 
+    // don't really care which muons are taken...
     // guess there ain't 108 generated anyways
     if (muCntr == m_maxMuons) break;
     int gen_idx = *it;
@@ -170,7 +170,7 @@ uGMTInputProducerFromGen::produce(edm::Event& iEvent, const edm::EventSetup& iSe
     int hwQual = 8;
     int hwCharge = (mcMuon.charge() > 0) ? 0 : 1;
     int hwChargeValid = 1;
-    
+
     mu.setHwPt(hwPt);
 
 
@@ -181,17 +181,17 @@ uGMTInputProducerFromGen::produce(edm::Event& iEvent, const edm::EventSetup& iSe
     int processor = globalWedgePhi / 48 + 1;
     int globalSectorPhi = (hwPhi-24); // this sets CMS phi = 0 to +15 deg
     if (globalSectorPhi < 0) {
-      globalSectorPhi += 576; 
+      globalSectorPhi += 576;
     }
 
 
     if (fabs(eta) > 0.8) {
       if (fabs(eta) < 1.2) {
-        tf = (eta > 0 ? tftype::omtf_neg : tftype::omtf_pos);
+        tf = (eta > 0 ? tftype::omtf_pos : tftype::omtf_neg);
         processor = globalSectorPhi / 96 + 1;
-        localPhi = globalSectorPhi%96; 
+        localPhi = globalSectorPhi%96;
       } else {
-        tf = (eta > 0 ? tftype::emtf_neg : tftype::emtf_pos);
+        tf = (eta > 0 ? tftype::emtf_pos : tftype::emtf_neg);
         processor = globalSectorPhi / 96 + 1;
         localPhi = globalSectorPhi%96;
       }
@@ -223,7 +223,7 @@ uGMTInputProducerFromGen::produce(edm::Event& iEvent, const edm::EventSetup& iSe
   for (int i = 0; i < 1008; ++i) {
     // from where could I take the tower energies?
     int energy = int(m_rnd.Gaus(12, 6));
-    if (energy < 0) energy = 0; 
+    if (energy < 0) energy = 0;
     if (energy > 31) energy = 31;
     towerSums->emplace_back(energy, i/28, i%28, i);
   }
@@ -234,40 +234,40 @@ uGMTInputProducerFromGen::produce(edm::Event& iEvent, const edm::EventSetup& iSe
   iEvent.put(endcapMuons, "ForwardTFMuons");
   iEvent.put(towerSums, "TriggerTowerSums");
   m_currEvt++;
- 
+
 }
 
 // ------------ method called once each job just before starting event loop  ------------
-void 
+void
 uGMTInputProducerFromGen::beginJob()
 {
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
-void 
+void
 uGMTInputProducerFromGen::endJob() {
 }
 
 // ------------ method called when starting to processes a run  ------------
-void 
+void
 uGMTInputProducerFromGen::beginRun(edm::Run&, edm::EventSetup const&)
 {
 }
 
 // ------------ method called when ending the processing of a run  ------------
-void 
+void
 uGMTInputProducerFromGen::endRun(edm::Run&, edm::EventSetup const&)
 {
 }
 
 // ------------ method called when starting to processes a luminosity block  ------------
-void 
+void
 uGMTInputProducerFromGen::beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
 {
 }
 
 // ------------ method called when ending the processing of a luminosity block  ------------
-void 
+void
 uGMTInputProducerFromGen::endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
 {
 }

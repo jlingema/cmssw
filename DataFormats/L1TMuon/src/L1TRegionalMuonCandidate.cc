@@ -1,5 +1,5 @@
 #include "DataFormats/L1TMuon/interface/L1TRegionalMuonCandidate.h"
-#include <iostream> 
+#include <iostream>
 
 namespace l1t {
 
@@ -22,9 +22,4 @@ L1TRegionalMuonCandidate::setTFIdentifiers(int processor, tftype trackFinder) {
   }
 }
 
-void 
-L1TRegionalMuonCandidate::setLink(int link) {
-  std::cout << "Please move to setTFIdentifiers" << std::endl;
-  m_link = link; 
-}
 } // namespace l1t

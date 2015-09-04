@@ -2,10 +2,10 @@
 //
 // Package:    MicroGMTEmulator
 // Class:      MicroGMTEmulator
-// 
+//
 /**\class MicroGMTEmulator MicroGMTEmulator.cc L1Trigger/L1TMuon/src/MicroGMTEmulator.cc
 
- Description: Takes txt-file input and produces barrel- / overlap- / forward TF muons 
+ Description: Takes txt-file input and produces barrel- / overlap- / forward TF muons
 
  Implementation:
      [Notes on implementation]
@@ -59,33 +59,33 @@ namespace l1t {
         virtual void beginJob() ;
         virtual void produce(edm::Event&, const edm::EventSetup&);
         virtual void endJob() ;
-        
+
         virtual void beginRun(edm::Run&, edm::EventSetup const&);
         virtual void endRun(edm::Run&, edm::EventSetup const&);
         virtual void beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
         virtual void endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&);
 
-        static bool compareMuons(const std::shared_ptr<MicroGMTConfiguration::InterMuon>& mu1, 
+        static bool compareMuons(const std::shared_ptr<MicroGMTConfiguration::InterMuon>& mu1,
                                 const std::shared_ptr<MicroGMTConfiguration::InterMuon>& mu2);
 
         void sortMuons(MicroGMTConfiguration::InterMuonList&, unsigned) const;
 
         void calculateRank(MicroGMTConfiguration::InterMuonList& muons) const;
 
-        void splitAndConvertMuons(MicroGMTConfiguration::InputCollection const& in, 
-                                  MicroGMTConfiguration::InterMuonList& out_pos, 
+        void splitAndConvertMuons(edm::Handle<MicroGMTConfiguration::InputCollection> const& in,
+                                  MicroGMTConfiguration::InterMuonList& out_pos,
                                   MicroGMTConfiguration::InterMuonList& out_neg,
-                                  L1TGMTInternalWedges& wedges_pos, 
+                                  L1TGMTInternalWedges& wedges_pos,
                                   L1TGMTInternalWedges& wedges_neg) const;
 
-        void convertMuons(MicroGMTConfiguration::InputCollection const& in, 
+        void convertMuons(edm::Handle<MicroGMTConfiguration::InputCollection> const& in,
                           MicroGMTConfiguration::InterMuonList& out,
                           L1TGMTInternalWedges& wedges) const;
 
-        void addMuonsToCollections(MicroGMTConfiguration::InterMuonList& coll, 
-                                   MicroGMTConfiguration::InterMuonList& interout, 
+        void addMuonsToCollections(MicroGMTConfiguration::InterMuonList& coll,
+                                   MicroGMTConfiguration::InterMuonList& interout,
                                    std::auto_ptr<MuonBxCollection>& out) const;
-        
+
         // ----------member data ---------------------------
         edm::InputTag m_barrelTfInputTag;
         edm::InputTag m_overlapTfInputTag;
@@ -133,7 +133,7 @@ l1t::MicroGMTEmulator::MicroGMTEmulator(const edm::ParameterSet& iConfig) : m_ra
   produces<MuonBxCollection>("imdMuonsOMTFPos");
   produces<MuonBxCollection>("imdMuonsOMTFNeg");
 
-  
+
 
 }
 
@@ -161,6 +161,7 @@ l1t::MicroGMTEmulator::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
   std::auto_ptr<MuonBxCollection> imdMuonsOMTFPos (new MuonBxCollection());
   std::auto_ptr<MuonBxCollection> imdMuonsOMTFNeg (new MuonBxCollection());
 
+
   Handle<MicroGMTConfiguration::InputCollection> bmtfMuons;
   Handle<MicroGMTConfiguration::InputCollection> emtfMuons;
   Handle<MicroGMTConfiguration::InputCollection> omtfMuons;
@@ -171,7 +172,7 @@ l1t::MicroGMTEmulator::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
   iEvent.getByLabel(m_forwardTfInputTag, emtfMuons);
   iEvent.getByLabel(m_overlapTfInputTag, omtfMuons);
   iEvent.getByLabel(m_trigTowerTag, trigTowers);
-  
+
   m_isolationUnit.setTowerSums(*trigTowers);
   MicroGMTConfiguration::InterMuonList internMuonsBmtf;
   MicroGMTConfiguration::InterMuonList internMuonsEmtfPos;
@@ -187,11 +188,12 @@ l1t::MicroGMTEmulator::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
   L1TGMTInternalWedges emtfNegWedges;
   L1TGMTInternalWedges omtfPosWedges;
 
-  // this converts the InputMuon type to the InternalMuon type and splits them into 
+  // this converts the InputMuon type to the InternalMuon type and splits them into
   // positive / negative eta collections necessary as LUTs may differ for pos / neg.
-  convertMuons(*bmtfMuons, internMuonsBmtf, bmtfWedges);
-  splitAndConvertMuons(*emtfMuons, internMuonsEmtfPos, internMuonsEmtfNeg, emtfPosWedges, emtfNegWedges);
-  splitAndConvertMuons(*omtfMuons, internMuonsOmtfPos, internMuonsOmtfNeg, omtfPosWedges, omtfNegWedges);
+
+  convertMuons(bmtfMuons, internMuonsBmtf, bmtfWedges);
+  splitAndConvertMuons(emtfMuons, internMuonsEmtfPos, internMuonsEmtfNeg, emtfPosWedges, emtfNegWedges);
+  splitAndConvertMuons(omtfMuons, internMuonsOmtfPos, internMuonsOmtfNeg, omtfPosWedges, omtfNegWedges);
 
   // cancel out within the track finders:
   m_cancelOutUnit.setCancelOutBits(bmtfWedges, tftype::bmtf, cancelmode::coordinate);
@@ -206,7 +208,7 @@ l1t::MicroGMTEmulator::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
   m_cancelOutUnit.setCancelOutBitsOverlapBarrel(omtfNegWedges, bmtfWedges, cancelmode::coordinate);
   m_cancelOutUnit.setCancelOutBitsOverlapEndcap(omtfPosWedges, emtfPosWedges, cancelmode::coordinate);
   m_cancelOutUnit.setCancelOutBitsOverlapEndcap(omtfNegWedges, emtfNegWedges, cancelmode::coordinate);
-  
+
   m_isolationUnit.extrapolateMuons(internMuonsBmtf);
   m_isolationUnit.extrapolateMuons(internMuonsEmtfNeg);
   m_isolationUnit.extrapolateMuons(internMuonsEmtfPos);
@@ -219,15 +221,16 @@ l1t::MicroGMTEmulator::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
   calculateRank(internMuonsEmtfPos);
   calculateRank(internMuonsOmtfNeg);
   calculateRank(internMuonsOmtfPos);
-  
+
   // The sort function both sorts and removes all but best "nSurvivors"
+
   sortMuons(internMuonsBmtf, 8);
   sortMuons(internMuonsOmtfPos, 4);
   sortMuons(internMuonsOmtfNeg, 4);
   sortMuons(internMuonsEmtfPos, 4);
   sortMuons(internMuonsEmtfNeg, 4);
 
-  // This combines the 5 streams into one InternalMuon collection for 
+  // This combines the 5 streams into one InternalMuon collection for
   // the final global sort.
   MicroGMTConfiguration::InterMuonList internalMuons;
   addMuonsToCollections(internMuonsEmtfPos, internalMuons, imdMuonsEMTFPos);
@@ -235,7 +238,7 @@ l1t::MicroGMTEmulator::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
   addMuonsToCollections(internMuonsBmtf, internalMuons, imdMuonsBMTF);
   addMuonsToCollections(internMuonsOmtfNeg, internalMuons, imdMuonsOMTFNeg);
   addMuonsToCollections(internMuonsEmtfNeg, internalMuons, imdMuonsEMTFNeg);
-  
+
   // sort internal muons and delete all but best 8
   sortMuons(internalMuons, 8);
 
@@ -246,12 +249,13 @@ l1t::MicroGMTEmulator::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
       math::PtEtaPhiMLorentzVector vec{mu->hwPt()*0.5, mu->hwEta()*0.010875, mu->hwGlobalPhi()*0.010908, 0.0};
       int iso = mu->hwAbsIso() + (mu->hwRelIso() << 1);
       // FIXME: once we debugged the change global -> local: Change hwLocalPhi -> hwGlobalPhi to test offsets
-      Muon outMu{vec, mu->hwPt(), mu->hwEta(), mu->hwGlobalPhi(), mu->hwQual(), mu->hwSign(), mu->hwSignValid(), iso, 0, true, mu->hwIsoSum(), mu->hwDPhi(), mu->hwDEta(), mu->hwRank()};
+      Muon outMu{vec, mu->originRef(), mu->hwPt(), mu->hwEta(), mu->hwGlobalPhi(), mu->hwQual(), mu->hwSign(), mu->hwSignValid(), iso, 0, true, mu->hwIsoSum(), mu->hwDPhi(), mu->hwDEta(), mu->hwRank()};
       m_debugOut << mu->hwCaloPhi() << " " << mu->hwCaloEta() << std::endl;
       outMuons->push_back(0, outMu);
     }
   }
-  
+
+
   iEvent.put(outMuons);
   iEvent.put(imdMuonsBMTF, "imdMuonsBMTF");
   iEvent.put(imdMuonsEMTFPos, "imdMuonsEMTFPos");
@@ -261,20 +265,20 @@ l1t::MicroGMTEmulator::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
 }
 
 
-bool 
-l1t::MicroGMTEmulator::compareMuons(const std::shared_ptr<MicroGMTConfiguration::InterMuon>& mu1, 
+bool
+l1t::MicroGMTEmulator::compareMuons(const std::shared_ptr<MicroGMTConfiguration::InterMuon>& mu1,
                                     const std::shared_ptr<MicroGMTConfiguration::InterMuon>& mu2) {
   return (mu1->hwWins() > mu2->hwWins());
 }
 
-void 
+void
 l1t::MicroGMTEmulator::sortMuons(MicroGMTConfiguration::InterMuonList& muons, unsigned nSurvivors) const {
   MicroGMTConfiguration::InterMuonList::iterator mu1;
   // reset from previous sort stage
   for (mu1 = muons.begin(); mu1 != muons.end(); ++mu1) {
     (*mu1)->setHwWins(0);
   }
-  
+
   for (mu1 = muons.begin(); mu1 != muons.end(); ++mu1) {
     auto mu2 = mu1;
     mu2++;
@@ -290,7 +294,7 @@ l1t::MicroGMTEmulator::sortMuons(MicroGMTConfiguration::InterMuonList& muons, un
   size_t nMuonsBefore = muons.size();
   mu1 = muons.begin();
   int minWins = nMuonsBefore-nSurvivors;
-  
+
   // remove all muons that were cancelled or that do not have sufficient rank
   // (reduces the container size to nSurvivors)
   while (mu1 != muons.end()) {
@@ -304,8 +308,8 @@ l1t::MicroGMTEmulator::sortMuons(MicroGMTConfiguration::InterMuonList& muons, un
 
 
 
-void 
-l1t::MicroGMTEmulator::calculateRank(MicroGMTConfiguration::InterMuonList& muons) const 
+void
+l1t::MicroGMTEmulator::calculateRank(MicroGMTConfiguration::InterMuonList& muons) const
 {
   for (auto& mu1 : muons) {
     int rank = m_rankPtQualityLUT.lookup(mu1->hwPt(), mu1->hwQual());
@@ -314,25 +318,26 @@ l1t::MicroGMTEmulator::calculateRank(MicroGMTConfiguration::InterMuonList& muons
 }
 
 
-void 
-l1t::MicroGMTEmulator::addMuonsToCollections(MicroGMTConfiguration::InterMuonList& coll, 
-                                             MicroGMTConfiguration::InterMuonList& interout, 
-                                             std::auto_ptr<MuonBxCollection>& out) const 
+void
+l1t::MicroGMTEmulator::addMuonsToCollections(MicroGMTConfiguration::InterMuonList& coll,
+                                             MicroGMTConfiguration::InterMuonList& interout,
+                                             std::auto_ptr<MuonBxCollection>& out) const
 {
-  for (auto& mu : coll) { 
+  for (auto& mu : coll) {
     interout.push_back(mu);
     ROOT::Math::LorentzVector<ROOT::Math::PxPyPzE4D<double> > vec{};
     // FIXME: once we debugged the change global -> local: Change hwLocalPhi -> hwGlobalPhi to test offsets
-    Muon outMu{vec, mu->hwPt(), mu->hwEta(), mu->hwGlobalPhi(), mu->hwQual(), mu->hwSign(), mu->hwSignValid(), -1, 0, true, -1, mu->hwDPhi(), mu->hwDEta(), mu->hwRank()};
+    Muon outMu{vec, mu->originRef(), mu->hwPt(), mu->hwEta(), mu->hwGlobalPhi(), mu->hwQual(), mu->hwSign(), mu->hwSignValid(), -1, 0, true, -1, mu->hwDPhi(), mu->hwDEta(), mu->hwRank()};
+
     out->push_back(0, outMu);
   }
 }
 
 void
-l1t::MicroGMTEmulator::splitAndConvertMuons(const MicroGMTConfiguration::InputCollection& in, 
-                                            MicroGMTConfiguration::InterMuonList& out_pos, 
+l1t::MicroGMTEmulator::splitAndConvertMuons(const edm::Handle<MicroGMTConfiguration::InputCollection>& in,
+                                            MicroGMTConfiguration::InterMuonList& out_pos,
                                             MicroGMTConfiguration::InterMuonList& out_neg,
-                                            L1TGMTInternalWedges& wedges_pos, 
+                                            L1TGMTInternalWedges& wedges_pos,
                                             L1TGMTInternalWedges& wedges_neg) const
 {
   // initialize the wedge collections:
@@ -342,22 +347,26 @@ l1t::MicroGMTEmulator::splitAndConvertMuons(const MicroGMTConfiguration::InputCo
     wedges_neg[i] = std::vector<std::shared_ptr<L1TGMTInternalMuon>>();
     wedges_neg[i].reserve(3);
   }
-  for (const auto& mu : in) {
-    if(mu.hwEta() > 0) {
-      std::shared_ptr<L1TGMTInternalMuon> out = std::make_shared<L1TGMTInternalMuon>(mu);
+  for (size_t i = 0; i < in->size(); ++i) {
+    if(in->at(i).hwEta() > 0) {
+      std::shared_ptr<L1TGMTInternalMuon> out = std::make_shared<L1TGMTInternalMuon>(in, i);
       out_pos.push_back(out);
-      wedges_pos[mu.processor()].push_back(out);
+      wedges_pos[in->at(i).processor()].push_back(out);
     } else {
-      std::shared_ptr<L1TGMTInternalMuon> out = std::make_shared<L1TGMTInternalMuon>(mu);
+      std::shared_ptr<L1TGMTInternalMuon> out = std::make_shared<L1TGMTInternalMuon>(in, i);
       out_neg.emplace_back(out);
-      wedges_neg[mu.processor()].push_back(out);
+      wedges_neg[in->at(i).processor()].push_back(out);
     }
   }
+  for (int i = 1; i <= 12; ++i) {
+    if(wedges_pos[i].size() > 3) edm::LogWarning("Input Mismatch") << " too many inputs per processor for emtf+ / omtf+" << std::endl;
+    if(wedges_neg[i].size() > 3) edm::LogWarning("Input Mismatch") << " too many inputs per processor for emtf- / omtf-" << std::endl;
+  }
 }
-        
-void 
-l1t::MicroGMTEmulator::convertMuons(const MicroGMTConfiguration::InputCollection& in, 
-                                    MicroGMTConfiguration::InterMuonList& out, 
+
+void
+l1t::MicroGMTEmulator::convertMuons(const edm::Handle<MicroGMTConfiguration::InputCollection>& in,
+                                    MicroGMTConfiguration::InterMuonList& out,
                                     L1TGMTInternalWedges& wedges) const
 {
   // initialize the wedge collection:
@@ -365,44 +374,47 @@ l1t::MicroGMTEmulator::convertMuons(const MicroGMTConfiguration::InputCollection
     wedges[i] = std::vector<std::shared_ptr<L1TGMTInternalMuon>>();
     wedges[i].reserve(3);
   }
-  for (const auto& mu : in) {
-    std::shared_ptr<L1TGMTInternalMuon> outMu = std::make_shared<L1TGMTInternalMuon>(mu); 
+  for (size_t i = 0; i < in->size(); ++i) {
+    std::shared_ptr<L1TGMTInternalMuon> outMu = std::make_shared<L1TGMTInternalMuon>(in, i);
     out.emplace_back(outMu);
-    wedges[mu.processor()].push_back(outMu);
+    wedges[in->at(i).processor()].push_back(outMu);
+  }
+  for (int i = 1; i <= 12; ++i) {
+    if(wedges[i].size() > 3) edm::LogWarning("Input Mismatch") << " too many inputs per processor for barrel" << std::endl;
   }
 }
 
 // ------------ method called once each job just before starting event loop  ------------
-void 
+void
 l1t::MicroGMTEmulator::beginJob()
 {
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
-void 
+void
 l1t::MicroGMTEmulator::endJob() {
 }
 
 // ------------ method called when starting to processes a run  ------------
-void 
+void
 l1t::MicroGMTEmulator::beginRun(edm::Run&, edm::EventSetup const&)
 {
 }
 
 // ------------ method called when ending the processing of a run  ------------
-void 
+void
 l1t::MicroGMTEmulator::endRun(edm::Run&, edm::EventSetup const&)
 {
 }
 
 // ------------ method called when starting to processes a luminosity block  ------------
-void 
+void
 l1t::MicroGMTEmulator::beginLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
 {
 }
 
 // ------------ method called when ending the processing of a luminosity block  ------------
-void 
+void
 l1t::MicroGMTEmulator::endLuminosityBlock(edm::LuminosityBlock&, edm::EventSetup const&)
 {
 }

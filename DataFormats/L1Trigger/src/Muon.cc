@@ -1,7 +1,9 @@
 
 #include "DataFormats/L1Trigger/interface/Muon.h"
+#include "DataFormats/L1TMuon/interface/L1TRegionalMuonCandidate.h"
 
 l1t::Muon::Muon( const LorentzVector& p4,
+    const RegionalRef& origin,
     int pt,
     int eta,
     int phi,
@@ -23,12 +25,14 @@ l1t::Muon::Muon( const LorentzVector& p4,
     hwIsoSum_(isoSum),
     hwDPhiExtra_(dPhi),
     hwDEtaExtra_(dEta),
-    hwRank_(rank)
+    hwRank_(rank),
+    regional_(origin)
 {
-  
+
 }
 
 l1t::Muon::Muon( const PolarLorentzVector& p4,
+    const RegionalRef& origin,
     int pt,
     int eta,
     int phi,
@@ -41,7 +45,7 @@ l1t::Muon::Muon( const PolarLorentzVector& p4,
     int isoSum,
     int dPhi,
     int dEta,
-    int rank )
+    int rank)
   : L1Candidate(p4, pt, eta, phi, qual, iso),
     hwCharge_(charge),
     hwChargeValid_(chargeValid),
@@ -50,95 +54,101 @@ l1t::Muon::Muon( const PolarLorentzVector& p4,
     hwIsoSum_(isoSum),
     hwDPhiExtra_(dPhi),
     hwDEtaExtra_(dEta),
-    hwRank_(rank)
-{
-  
-}
-
-l1t::Muon::~Muon() 
+    hwRank_(rank),
+    regional_(origin)
 {
 
 }
+const l1t::RegionalRef
+l1t::Muon::origin() const {
+  return regional_;
+}
 
-void 
+
+l1t::Muon::~Muon()
+{
+
+}
+
+void
 l1t::Muon::setHwCharge(int charge)
 {
   hwCharge_ = charge;
 }
 
-void 
+void
 l1t::Muon::setHwChargeValid(int valid)
 {
   hwChargeValid_ = valid;
 }
 
-void 
+void
 l1t::Muon::setHwTag(int tag)
 {
   hwTag_ = tag;
 }
 
-void 
-l1t::Muon::setHwIsoSum(int isoSum) 
+void
+l1t::Muon::setHwIsoSum(int isoSum)
 {
   hwIsoSum_ = isoSum;
 }
 
-void 
+void
 l1t::Muon::setHwDPhiExtra(int dPhi)
 {
   hwDEtaExtra_ = dPhi;
 }
 
-void 
-l1t::Muon::setHwDEtaExtra(int dEta) 
+void
+l1t::Muon::setHwDEtaExtra(int dEta)
 {
   hwDEtaExtra_ = dEta;
 }
 
-void 
-l1t::Muon::setHwRank(int rank) 
+void
+l1t::Muon::setHwRank(int rank)
 {
   hwRank_ = rank;
 }
 
-int 
+int
 l1t::Muon::hwCharge() const
 {
   return hwCharge_;
 }
 
-int 
+int
 l1t::Muon::hwChargeValid() const
 {
   return hwChargeValid_;
 }
 
-int 
+int
 l1t::Muon::hwTag() const
 {
   return hwTag_;
 }
 
-int 
-l1t::Muon::hwIsoSum() const 
+int
+l1t::Muon::hwIsoSum() const
 {
   return hwIsoSum_;
 }
 
-int 
+int
 l1t::Muon::hwDPhiExtra() const
 {
   return hwDPhiExtra_;
 }
 
-int 
+int
 l1t::Muon::hwDEtaExtra() const
 {
   return hwDEtaExtra_;
 }
 
-int 
+int
 l1t::Muon::hwRank() const
 {
   return hwRank_;

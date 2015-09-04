@@ -4,8 +4,8 @@
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 
 // I/O functions
-void 
-l1t::MicroGMTLUT::save(std::ofstream& output) 
+void
+l1t::MicroGMTLUT::save(std::ofstream& output)
 {
   std::stringstream out;
   headerToStream(out);
@@ -17,15 +17,15 @@ l1t::MicroGMTLUT::save(std::ofstream& output)
 void
 l1t::MicroGMTLUT::load(const std::string& inFileName) {
   std::ifstream fstream;
-  fstream.open(inFileName.c_str());
+  fstream.open(edm::FileInPath(inFileName.c_str()).fullPath());
   if (!fstream.good()) {
     fstream.close();
     throw cms::Exception("FileOpenError") << "Failed to open LUT file: " << inFileName;
   }
-  
+
 
   std::string lineID = "";
-  
+
   while (!fstream.eof()) {
     // read until either end of file is reached or the CONTENT line is found
     lineID = "";
@@ -45,8 +45,8 @@ l1t::MicroGMTLUT::load(const std::string& inFileName) {
   fstream.close();
 }
 
-int 
-l1t::MicroGMTLUT::lookupPacked(const int input) const 
+int
+l1t::MicroGMTLUT::lookupPacked(const int input) const
 {
   // sort to make sure the hash is correct?
   if (m_initialized) {
@@ -56,8 +56,8 @@ l1t::MicroGMTLUT::lookupPacked(const int input) const
   return 0;
 }
 
-void 
-l1t::MicroGMTLUT::initialize() 
+void
+l1t::MicroGMTLUT::initialize()
 {
   for (int in = 0; in < (1 << m_totalInWidth); ++in) {
     int out = lookupPacked(in);
@@ -66,32 +66,36 @@ l1t::MicroGMTLUT::initialize()
   m_initialized = true;
 }
 
-int 
-l1t::MicroGMTLUT::checkedInput(unsigned in, unsigned maxWidth) const 
+int
+l1t::MicroGMTLUT::checkedInput(unsigned in, unsigned maxWidth) const
 {
   unsigned maxIn = (1 << maxWidth) - 1;
   return (in < maxIn ? in : maxIn);
 }
 
-void 
-l1t::MicroGMTLUT::contentsToStream(std::stringstream& stream) 
+void
+l1t::MicroGMTLUT::contentsToStream(std::stringstream& stream)
 {
-  stream << "CONTENT : [ ";
-  
-  for (int in = 0; in < (1 << m_totalInWidth); ++in) {
-    stream << lookupPacked(in) << ", ";
+  stream << "\"CONTENT\" : [ ";
+
+  int maxVal = (1<<m_totalInWidth);
+  for (int in = 0; in < maxVal; ++in) {
+    stream << lookupPacked(in);
+    if (in != maxVal - 1) {
+      stream << ", ";
+    }
   }
-  stream << " ] " << std::endl;
+  stream << "] " << std::endl;
 }
 
 void
-l1t::MicroGMTLUT::headerToStream(std::stringstream& stream) const 
+l1t::MicroGMTLUT::headerToStream(std::stringstream& stream) const
 {
   stream << "{" << std::endl;
-  stream << "NAME      : \"Name of the LUT\""<< std::endl;
-  stream << "INSTNACES : \"List (space separated) of instances of this LUT (differing contents but same in/output)\"" << std::endl;
-  stream << "INPUTS    : \"List (space separated) of inputs in format <input_name>(<input_width>)\"" << std::endl;
-  stream << "OUTPUTS   : \"List (space separated) of outputs in format <output_name>(<output_width>)\"" << std::endl;
-  stream << "IPBUS_ADD : \"Address for access via IPBus\"" << std::endl;
-  stream << "CONTENT_X : \"List (space separated) of outputs from packed int for zero-indexed instance X\"" << std::endl;
+  stream << "\"NAME\"      : \"Name of the LUT\","<< std::endl;
+  stream << "\"INSTNACES\" : \"List (space separated) of instances of this LUT (differing contents but same in/output)\"," << std::endl;
+  stream << "\"INPUTS\"    : \"List (space separated) of inputs in format <input_name>(<input_width>)\"," << std::endl;
+  stream << "\"OUTPUTS\"   : \"List (space separated) of outputs in format <output_name>(<output_width>)\"," << std::endl;
+  stream << "\"IPBUS_ADD\" : \"Address for access via IPBus\"," << std::endl;
+  stream << "\"CONTENT_X\" : \"List (space separated) of outputs from packed int for zero-indexed instance X\"," << std::endl;
 }

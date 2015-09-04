@@ -3,17 +3,21 @@
 
 #include "DataFormats/L1Trigger/interface/L1Candidate.h"
 #include "DataFormats/L1Trigger/interface/BXVector.h"
+#include "DataFormats/Common/interface/Ref.h"
+#include "DataFormats/L1TMuon/interface/L1TRegionalMuonCandidateFwd.h"
 
 namespace l1t {
 
   class Muon;
   typedef BXVector<Muon> MuonBxCollection;
+  typedef edm::Ref<L1TRegionalMuonCandidateCollection> RegionalRef;
 
   class Muon : public L1Candidate {
-    
+
   public:
     Muon() {};
     Muon( const LorentzVector& p4,
+      const RegionalRef& origin,
       int pt=0,
       int eta=0,
       int phi=0,
@@ -21,35 +25,36 @@ namespace l1t {
       int charge=0,
       int chargeValid=0,
       int iso=0,
-      int tag=0, 
-      bool debug = false,
-      int isoSum = 0,
-      int dPhi = 0,
-      int dEta = 0,
-      int rank = 0);
-    
-    Muon( const PolarLorentzVector& p4,
-      int pt=0,
-      int eta=0,
-      int phi=0,
-      int qual=0,
-      int charge=0,
-      int chargeValid=0,
-      int iso=0,
-      int tag=0, 
+      int tag=0,
       bool debug = false,
       int isoSum = 0,
       int dPhi = 0,
       int dEta = 0,
       int rank = 0);
 
-    ~Muon();    
+    Muon( const PolarLorentzVector& p4,
+      const RegionalRef& origin,
+      int pt=0,
+      int eta=0,
+      int phi=0,
+      int qual=0,
+      int charge=0,
+      int chargeValid=0,
+      int iso=0,
+      int tag=0,
+      bool debug = false,
+      int isoSum = 0,
+      int dPhi = 0,
+      int dEta = 0,
+      int rank = 0);
+
+    ~Muon();
 
     // set integer values
     void setHwCharge(int charge);
     void setHwChargeValid(int valid);
     void setHwTag(int tag);
-    
+
     void setHwIsoSum(int isoSum);
     void setHwDPhiExtra(int dPhi);
     void setHwDEtaExtra(int dEta);
@@ -62,12 +67,13 @@ namespace l1t {
 
     int hwIsoSum() const;
     int hwDPhiExtra() const;
-    int hwDEtaExtra() const;  
-    int hwRank() const;  
-    
-    
+    int hwDEtaExtra() const;
+    int hwRank() const;
+
+    const RegionalRef origin() const;
+
   private:
-    
+
     // additional hardware quantities common to L1 global jet
     int hwCharge_;
     int hwChargeValid_;
@@ -79,9 +85,11 @@ namespace l1t {
     int hwDPhiExtra_;
     int hwDEtaExtra_;
     int hwRank_;
-    
+
+    // back reference to origin regional candidate
+    RegionalRef regional_;
   };
-  
+
 }
 
 #endif
