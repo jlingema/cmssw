@@ -200,8 +200,8 @@ l1t::MicroGMTEmulator::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
   m_cancelOutUnit.setCancelOutBits(omtfPosWedges, tftype::omtf_pos, cancelmode::coordinate);
   m_cancelOutUnit.setCancelOutBits(omtfNegWedges, tftype::omtf_neg, cancelmode::coordinate);
   // cancel-out for endcap will be done in the sorter
-  // m_cancelOutUnit.setCancelOutBits(emtfPosWedges, tftype::emtf_pos);
-  // m_cancelOutUnit.setCancelOutBits(emtfNegWedges, tftype::emtf_neg);
+  m_cancelOutUnit.setCancelOutBits(emtfPosWedges, tftype::emtf_pos, cancelmode::coordinate);
+  m_cancelOutUnit.setCancelOutBits(emtfNegWedges, tftype::emtf_neg, cancelmode::coordinate);
 
   // cancel out between track finder acceptance overlaps:
   m_cancelOutUnit.setCancelOutBitsOverlapBarrel(omtfPosWedges, bmtfWedges, cancelmode::coordinate);

@@ -70,19 +70,17 @@ MicroGMTCancelOutUnit::setCancelOutBitsOverlapBarrel(L1TGMTInternalWedges& omtfS
   std::vector<std::shared_ptr<L1TGMTInternalMuon>> coll2;
   coll2.reserve(12);
 
-  for (int currentSector = 1; currentSector <= 6; ++currentSector) {
+  for (int currentSector = 0; currentSector < 6; ++currentSector) {
     for (auto omtfMuon : omtfSectors.at(currentSector)) {
       coll1.push_back(omtfMuon);
     }
-    // BMTF | 2  | 3  | 4  | 5  | 6  | 7  | 8  | 9  | 10 | 11 | 12 | 1  |
-    // OMTF |    1    |    2    |    3    |    4    |    5    |    6    |
+    // BMTF | 1  | 2  | 3  | 4  | 5  | 6  | 7  | 8  | 9  | 10 | 11 | 0  |
+    // OMTF |    0    |    1    |    2    |    3    |    4    |    5    |
     // cancel OMTF sector x with corresponding BMTF wedge + the two on either side;
-    // e.g. OMTF 1 with BMTF 1, 2, 3, 4, OMTF 2 with BMTF 3, 4, 5, 6 etc.
+    // e.g. OMTF 0 with BMTF 0, 1, 2, 3, OMTF 2 with BMTF 4, 5, 6, 7 etc.
     for (int i = 0; i < 4; ++i) {
-      int currentWedge = currentSector * 2 - 1 + i;
-      // handling the wrap-around: doing a shift by one for the modulo
-      // as the wedge numbering starts at 1 instead of 0
-      currentWedge = (currentWedge - 1) % 12 + 1;
+      int currentWedge = (currentSector * 2 + i) % 12;
+
       for (auto bmtfMuon : bmtfWedges.at(currentWedge)) {
         coll2.push_back(bmtfMuon);
       }
@@ -107,18 +105,17 @@ MicroGMTCancelOutUnit::setCancelOutBitsOverlapEndcap(L1TGMTInternalWedges& omtfS
   std::vector<std::shared_ptr<L1TGMTInternalMuon>> coll2;
   coll2.reserve(9);
 
-  for (int curOmtfSector = 1; curOmtfSector <= 6; ++curOmtfSector) {
+  for (int curOmtfSector = 0; curOmtfSector < 6; ++curOmtfSector) {
     for (auto omtfMuon : omtfSectors.at(curOmtfSector)) {
       coll1.push_back(omtfMuon);
     }
-    // OMTF |    1    |    2    |    3    |    4    |    5    |    6    |
-    // EMTF |    1    |    2    |    3    |    4    |    5    |    6    |
+    // OMTF |    0    |    1    |    2    |    3    |    4    |    5    |
+    // EMTF |    0    |    1    |    2    |    3    |    4    |    5    |
     // cancel OMTF sector x with corresponding EMTF sector + the ones on either side;
-    // e.g. OMTF 1 with EMTF 6, 1, 2; OMTF 2 with EMTF 1, 2, 3 etc.
+    // e.g. OMTF 1 with EMTF 0, 1, 2; OMTF 0 with EMTF 5, 0, 1 etc.
     for (int i = 0; i < 3; ++i) {
-      // handling the wrap around: doing shift by 6 (because 1 has to be compared to 6)
-      // and the additional shift by one as above because of 1-indexed processor IDs
-      int curEmtfSector = ((curOmtfSector + 6) - 2 + i) % 6 + 1;
+      // handling the wrap around: adding 5 because 0 has to be compared to 5
+      int curEmtfSector = ((curOmtfSector + 5) + i) % 6;
       for (auto emtfMuon : emtfSectors.at(curEmtfSector)) {
         coll2.push_back(emtfMuon);
       }
@@ -131,7 +128,6 @@ MicroGMTCancelOutUnit::setCancelOutBitsOverlapEndcap(L1TGMTInternalWedges& omtfS
     coll1.clear();
     coll2.clear();
   }
-
 }
 
 void
@@ -157,7 +153,7 @@ MicroGMTCancelOutUnit::getCoordinateCancelBits(std::vector<std::shared_ptr<L1TGM
       // is greater than what we want to cancel -> 15(int) is max => 15*0.01 = 0.15 (rad)
       if (dEta < 15 && dPhi < 15) {
         int match = matchLUT->lookup(dEta & dEtaMask, dPhi & dPhiMask);
-        if((*mu_w1)->hwQual() > (*mu_w2)->hwQual() && match == 1) {
+        if((*mu_w1)->hwPt() < (*mu_w2)->hwPt() && match == 1) {
           (*mu_w2)->setHwCancelBit(1);
         } else if (match == 1) {
           (*mu_w1)->setHwCancelBit(1);

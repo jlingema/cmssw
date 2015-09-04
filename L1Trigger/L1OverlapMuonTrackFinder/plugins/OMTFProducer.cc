@@ -24,19 +24,19 @@ OMTFProducer::OMTFProducer(const edm::ParameterSet& cfg):
   produces<l1t::L1TRegionalMuonCandidateCollection >("OMTF");
 
   inputToken = consumes<TriggerPrimitiveCollection>(trigPrimSrc);
-  
+
   if(!theConfig.exists("omtf")){
     edm::LogError("OMTFProducer")<<"omtf configuration not found in cfg.py";
   }
-  
+
   myInputMaker = new OMTFinputMaker();
   mySorter = new OMTFSorter();
   myWriter = 0;
-  
+
   dumpResultToXML = theConfig.getParameter<bool>("dumpResultToXML");
   dumpGPToXML = theConfig.getParameter<bool>("dumpGPToXML");
   theConfig.getParameter<std::string>("XMLDumpFileName");
-  
+
   if(dumpResultToXML || dumpGPToXML){
     myWriter = new XMLConfigWriter();
     std::string fName = "OMTF_Events";
@@ -68,7 +68,7 @@ void OMTFProducer::beginJob(){
   }
 }
 /////////////////////////////////////////////////////
-/////////////////////////////////////////////////////  
+/////////////////////////////////////////////////////
 void OMTFProducer::endJob(){
 
   if(dumpResultToXML && !dumpGPToXML){
@@ -81,7 +81,7 @@ void OMTFProducer::endJob(){
     myWriter->initialiseXMLDocument(fName);
     const std::map<Key,GoldenPattern*> & myGPmap = myOMTF->getPatterns();
     for(auto itGP: myGPmap){
-      //std::cout<<*itGP.second<<std::endl;     
+      //std::cout<<*itGP.second<<std::endl;
       myWriter->writeGPData(*itGP.second);
     }
     fName = "GPs.xml";
@@ -99,7 +99,7 @@ void OMTFProducer::endJob(){
       GoldenPattern *aGP2 = aGP1;
 
       ++aKey.thePtCode;
-      if(aKey.thePtCode<=31 && myGPmap.find(aKey)!=myGPmap.end()) aGP2 =  myGPmap.find(aKey)->second;      
+      if(aKey.thePtCode<=31 && myGPmap.find(aKey)!=myGPmap.end()) aGP2 =  myGPmap.find(aKey)->second;
 
       myWriter->writeGPData(*aGP1,*aGP2);
 
@@ -112,9 +112,9 @@ void OMTFProducer::endJob(){
       ++aKey.thePtCode;
       ++aKey.thePtCode;
       aKey.theCharge = -1;
-    }   
+    }
     fName = "GPs_2x.xml";
-    myWriter->finaliseXMLDocument(fName);  
+    myWriter->finaliseXMLDocument(fName);
     //////////////////////////////////////////////
     ///4x merging
     fName = "OMTF";
@@ -123,7 +123,7 @@ void OMTFProducer::endJob(){
     GoldenPattern *dummy = new GoldenPattern(Key(0,0,0));
     dummy->reset();
 
-    aKey = Key(1, iPtMin, charge);    
+    aKey = Key(1, iPtMin, charge);
     while(myGPmap.find(aKey)!=myGPmap.end()){
 
     GoldenPattern *aGP1 = myGPmap.find(aKey)->second;
@@ -133,11 +133,11 @@ void OMTFProducer::endJob(){
 
     ++aKey.thePtCode;
     if(aKey.thePtCode<=31 && myGPmap.find(aKey)!=myGPmap.end()) aGP2 =  myGPmap.find(aKey)->second;
-    
+
     if(aKey.thePtCode>19){
       ++aKey.thePtCode;
       if(aKey.thePtCode<=31 && myGPmap.find(aKey)!=myGPmap.end()) aGP3 =  myGPmap.find(aKey)->second;
-      
+
       ++aKey.thePtCode;
       if(aKey.thePtCode<=31 && myGPmap.find(aKey)!=myGPmap.end()) aGP4 =  myGPmap.find(aKey)->second;
     }
@@ -147,9 +147,9 @@ void OMTFProducer::endJob(){
     }
     ++aKey.thePtCode;
     myWriter->writeGPData(*aGP1,*aGP2, *aGP3, *aGP4);
-    }   
+    }
     ///
-    aKey = Key(1, iPtMin,1);    
+    aKey = Key(1, iPtMin,1);
     while(myGPmap.find(aKey)!=myGPmap.end()){
 
     GoldenPattern *aGP1 = myGPmap.find(aKey)->second;
@@ -159,11 +159,11 @@ void OMTFProducer::endJob(){
 
     ++aKey.thePtCode;
     if(aKey.thePtCode<=31 && myGPmap.find(aKey)!=myGPmap.end()) aGP2 =  myGPmap.find(aKey)->second;
-    
+
     if(aKey.thePtCode>19){
       ++aKey.thePtCode;
       if(aKey.thePtCode<=31 && myGPmap.find(aKey)!=myGPmap.end()) aGP3 =  myGPmap.find(aKey)->second;
-      
+
       ++aKey.thePtCode;
       if(aKey.thePtCode<=31 && myGPmap.find(aKey)!=myGPmap.end()) aGP4 =  myGPmap.find(aKey)->second;
     }
@@ -173,13 +173,13 @@ void OMTFProducer::endJob(){
     }
     ++aKey.thePtCode;
     myWriter->writeGPData(*aGP1,*aGP2, *aGP3, *aGP4);
-    } 
+    }
     fName = "GPs_4x.xml";
-    myWriter->finaliseXMLDocument(fName); 
+    myWriter->finaliseXMLDocument(fName);
   }
 }
 /////////////////////////////////////////////////////
-/////////////////////////////////////////////////////  
+/////////////////////////////////////////////////////
 void OMTFProducer::produce(edm::Event& iEvent, const edm::EventSetup& evSetup){
 
   std::ostringstream myStr;
@@ -200,7 +200,7 @@ void OMTFProducer::produce(edm::Event& iEvent, const edm::EventSetup& evSetup){
   //l1t::tftype mtfType = l1t::tftype::omtf_pos;
   //l1t::tftype mtfType = l1t::tftype::omtf_neg;
   //l1t::tftype mtfType = l1t::tftype::emtf_pos;
-  
+
   ///Loop over all processors, each covering 60 deg in phi
   for(unsigned int iProcessor=0;iProcessor<6;++iProcessor){
 
@@ -209,9 +209,9 @@ void OMTFProducer::produce(edm::Event& iEvent, const edm::EventSetup& evSetup){
     ///Input data with phi ranges shifted for each processor, so it fits 11 bits range
     const OMTFinput *myInputPos = myInputMaker->buildInputForProcessor(filteredDigis,iProcessor, l1t::tftype::omtf_pos);
     OMTFinput myShiftedInputPos =  myOMTF->shiftInput(iProcessor,*myInputPos);
-    
+
     const OMTFinput *myInputNeg = myInputMaker->buildInputForProcessor(filteredDigis,iProcessor, l1t::tftype::omtf_neg);
-    OMTFinput myShiftedInputNeg =  myOMTF->shiftInput(iProcessor,*myInputNeg);       
+    OMTFinput myShiftedInputNeg =  myOMTF->shiftInput(iProcessor,*myInputNeg);
 
     l1t::L1TRegionalMuonCandidateCollection myOTFCandidatesPos, myOTFCandidatesNeg;
     ///Results for each GP in each logic region of given processor
@@ -225,7 +225,7 @@ void OMTFProducer::produce(edm::Event& iEvent, const edm::EventSetup& evSetup){
     ///Shift phi scales, and put uGMT candidates into myCands collection
     processCandidates(iProcessor, myCands, myOTFCandidatesPos, l1t::tftype::omtf_pos);
     processCandidates(iProcessor, myCands, myOTFCandidatesNeg, l1t::tftype::omtf_neg);
-    
+
     ///Write data to XML file
     if(dumpResultToXML){
       xercesc::DOMElement * aProcElement = myWriter->writeEventData(aTopElement,iProcessor,myShiftedInputPos);
@@ -235,13 +235,13 @@ void OMTFProducer::produce(edm::Event& iEvent, const edm::EventSetup& evSetup){
 	if(myCand.pt){
 	  myWriter->writeCandidateData(aProcElement,iRefHit,myCand);
 	  /*
-	  for(auto & itKey: myResults[iRefHit]) myWriter->writeResultsData(aProcElement, 
+	  for(auto & itKey: myResults[iRefHit]) myWriter->writeResultsData(aProcElement,
 									   iRefHit,
-									   itKey.first,itKey.second);    
+									   itKey.first,itKey.second);
 	  */
 	}
       }
-    }    
+    }
   }
 
   //dumpResultToXML = true;
@@ -252,7 +252,7 @@ void OMTFProducer::produce(edm::Event& iEvent, const edm::EventSetup& evSetup){
   iEvent.put(myCands, "OMTF");
 }
 /////////////////////////////////////////////////////
-/////////////////////////////////////////////////////  
+/////////////////////////////////////////////////////
 void OMTFProducer::processCandidates(unsigned int iProcessor,
 				     std::auto_ptr<l1t::L1TRegionalMuonCandidateCollection > & myCands,
 				     l1t::L1TRegionalMuonCandidateCollection & myOTFCandidates,
@@ -262,11 +262,11 @@ void OMTFProducer::processCandidates(unsigned int iProcessor,
   int procOffset = OMTFConfiguration::globalPhiStart(iProcessor);
   if(procOffset<0) procOffset+=(int)OMTFConfiguration::nPhiBins;
   ///Set local 0 at iProcessor x 15 deg
-  procOffset-=(15+iProcessor*60)/360.0*OMTFConfiguration::nPhiBins;    
+  procOffset-=(15+iProcessor*60)/360.0*OMTFConfiguration::nPhiBins;
   int lowScaleEnd = pow(2,OMTFConfiguration::nPhiBits-1);
 
     for(unsigned int iCand=0; iCand<myOTFCandidates.size(); ++iCand){
-      // shift phi from processor to global coordinates     
+      // shift phi from processor to global coordinates
       int phiValue = (myOTFCandidates[iCand].hwPhi()+procOffset+lowScaleEnd);
       if(phiValue>=(int)OMTFConfiguration::nPhiBins) phiValue-=OMTFConfiguration::nPhiBins;
       phiValue/=10; //uGMT has 10x coarser scale than OMTF
@@ -275,21 +275,21 @@ void OMTFProducer::processCandidates(unsigned int iProcessor,
       //phiValue =(myOTFCandidates[iCand].hwPhi()+ lowScaleEnd);
       //phiValue = iProcessor;
       ////
-      
+
       myOTFCandidates[iCand].setHwPhi(phiValue);
-      myOTFCandidates[iCand].setTFIdentifiers(iProcessor+1,mtfType);
-      // store candidate 
-      if(myOTFCandidates[iCand].hwPt()) myCands->push_back(myOTFCandidates[iCand]);             
-    }   
+      myOTFCandidates[iCand].setTFIdentifiers(iProcessor,mtfType);
+      // store candidate
+      if(myOTFCandidates[iCand].hwPt()) myCands->push_back(myOTFCandidates[iCand]);
+    }
 }
 /////////////////////////////////////////////////////
-/////////////////////////////////////////////////////  
+/////////////////////////////////////////////////////
 const L1TMuon::TriggerPrimitiveCollection OMTFProducer::filterDigis(const L1TMuon::TriggerPrimitiveCollection & vDigi){
 
   if(!theConfig.getParameter<bool>("dropRPCPrimitives") &&
      !theConfig.getParameter<bool>("dropDTPrimitives") &&
      !theConfig.getParameter<bool>("dropCSCPrimitives")) return vDigi;
-  
+
   L1TMuon::TriggerPrimitiveCollection filteredDigis;
   for(auto it:vDigi){
     switch (it.subsystem()) {
@@ -305,10 +305,10 @@ const L1TMuon::TriggerPrimitiveCollection OMTFProducer::filterDigis(const L1TMuo
       if(!theConfig.getParameter<bool>("dropCSCPrimitives")) filteredDigis.push_back(it);
       break;
     }
-    case L1TMuon::TriggerPrimitive::kNSubsystems: {break;} 
+    case L1TMuon::TriggerPrimitive::kNSubsystems: {break;}
     }
   }
   return filteredDigis;
 }
 /////////////////////////////////////////////////////
-/////////////////////////////////////////////////////  
+/////////////////////////////////////////////////////

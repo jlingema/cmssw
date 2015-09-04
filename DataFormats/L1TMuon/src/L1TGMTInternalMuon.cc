@@ -35,7 +35,7 @@ L1TGMTInternalMuon::calcGlobalPhi(int locPhi, tftype t, int proc) {
       globPhi = globPhi%576;
   } else {
       // all others correspond to 60 degree sectors = 96 in int-scale
-      globPhi = (proc - 1) * 96 + locPhi;
+      globPhi = (proc) * 96 + locPhi;
       // first processor starts at CMS phi = 15 degrees... Handle wrap-around with %:
       globPhi = (globPhi + 24) % 576;
   }

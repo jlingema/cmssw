@@ -66,7 +66,7 @@ int whichScheme = 3;
 //7:TrackEta:dPhi12:dPhi23:dEta13:CLCT1:FR1
 //8:Single Station Track Not Possible
 //9:TrackEta:dPhi14:dEta14:CLCT1:CLCT4:FR1
-//10:TrackEta:dPhi24:dEta24:CLCT2:CLCT4:FR2 
+//10:TrackEta:dPhi24:dEta24:CLCT2:CLCT4:FR2
 //11:TrackEta:dPhi12:dPhi24:dEta14:CLCT1:FR1
 //12:TrackEta:dPhi34:dEta34:CLCT3:CLCT4:FR3
 //13:TrackEta:dPhi13:dPhi34:dEta14:CLCT1:FR1
@@ -76,7 +76,7 @@ int ModeVariables_Scheme3[13][6] =
   {
     {0,6,12,13,20,-999},            // 3
     {-999,-999,-999,-999,-999,-999},  // 4
-    {1,7,12,14,20,-999},            // 5  
+    {1,7,12,14,20,-999},            // 5
     {3,9,13,14,21,-999},            // 6
     {0,3,7,12,20,-999},               // 7
     {-999,-999,-999,-999,-999,-999},  // 8
@@ -89,7 +89,7 @@ int ModeVariables_Scheme3[13][6] =
     {0,3,5,20,-999,-999}            // 15
   };
 //const char *dirSchemeC = "L1Trigger/L1EndcapMuonTrackFinder/plugins/ModeVariables/trees";
-const char *dirSchemeC = "L1Trigger/L1EndcapMuonTrackFinder/plugins/ModeVariables/trees";
+const char *dirSchemeC = "L1Trigger/L1EndcapMuonTrackFinder/data/ModeVariables/trees";
 
 //------------------------------------------------//
 
@@ -110,12 +110,12 @@ const int dPhiNLBMap_8bit_512Max[256] = {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 1
 
 const int dPhiNLBMap_5bit[32] =
   {  0       ,       1       ,       2       ,       4       ,       5       ,       7       ,       9       ,       11      ,       13      ,       15      ,       18      ,       21      ,       24      ,       28      ,       32      ,       37      ,       41      ,       47      ,       53      ,       60      ,       67      ,       75      ,       84      ,       94      ,       105     ,       117     ,       131     ,       145     ,       162     ,       180     ,       200     ,       222};
- 
+
 // Array that maps the 7-bit integer dPhi --> dPhi-units. It is assumed that this is used for dPhi12,
 // which has a maximum value of 7.67 degrees (511 units) in the extrapolation units.
 const int dPhiNLBMap_7bit[128] =
   {     0       ,       1       ,       2       ,       3       ,       4       ,       5       ,       6       ,       8       ,       9       ,       10      ,       11      ,       12      ,       14      ,       15      ,       16      ,       17      ,       19      ,       20      ,       21      ,       23      ,       24      ,       26      ,       27      ,       29      ,       30      ,       32      ,       33      ,       35      ,       37      ,       38      ,       40      ,       42      ,       44      ,       45      ,       47      ,       49      ,       51      ,       53      ,       55      ,       57      ,       59      ,       61      ,       63      ,       65      ,       67      ,       70      ,       72      ,       74      ,       77      ,       79      ,       81      ,       84      ,       86      ,       89      ,       92      ,       94      ,       97      ,       100     ,       103     ,       105     ,       108     ,       111     ,       114     ,       117     ,       121     ,       124     ,       127     ,       130     ,       134     ,       137     ,       141     ,       144     ,       148     ,       151     ,       155     ,       159     ,       163     ,       167     ,       171     ,       175     ,       179     ,       183     ,       188     ,       192     ,       197     ,       201     ,       206     ,       210     ,       215     ,       220     ,       225     ,       230     ,       235     ,       241     ,       246     ,       251     ,       257     ,       263     ,       268     ,       274     ,       280     ,       286     ,       292     ,       299     ,       305     ,       312     ,       318     ,       325     ,       332     ,       339     ,       346     ,       353     ,       361     ,       368     ,       376     ,       383     ,       391     ,       399     ,       408     ,       416     ,       425     ,       433     ,       442     ,       451     ,       460     ,       469     ,       479     ,       489 };
- 
+
 // Array that maps the 8-bit integer dPhi --> dPhi-units. It is assumed that this is used for dPhi12,
 // which has a maximum value of 7.67 degrees (511 units) in the extrapolation units.
 const int dPhiNLBMap_8bit[256] =
@@ -125,12 +125,12 @@ const int dPhiNLBMap_8bit[256] =
 
 float getNLBdPhi(float dPhi, int bits, int max=512)
 {
-  float dPhi_= max; 
+  float dPhi_= max;
   float sign_ = 1;
   if (dPhi<0)
     sign_ = -1;
   dPhi = fabs(dPhi);
-  
+
   if (max==256)
     {
       if (bits == 5)
@@ -187,21 +187,21 @@ float getNLBdPhi(float dPhi, int bits, int max=512)
               }
         }
     }
-  
+
   if (dPhi>=max) dPhi_ = max;
-  return (sign_ * dPhi_);  
+  return (sign_ * dPhi_);
 }
 
 
 
 int getNLBdPhiBin(float dPhi, int bits, int max=512)
 {
-  int dPhiBin_= (1<<bits)-1; 
+  int dPhiBin_= (1<<bits)-1;
   //float sign_ = 1;
   //if (dPhi<0)
   //  sign_ = -1;
   dPhi = fabs(dPhi);
-  
+
   if (max==256)
     {
       if (bits == 5)
@@ -253,18 +253,18 @@ int getNLBdPhiBin(float dPhi, int bits, int max=512)
               }
         }
     }
-  
-  return ( dPhiBin_);  
+
+  return ( dPhiBin_);
 }
 
 
 float getdPhiFromBin(int dPhiBin, int bits, int max=512)
 {
-  int dPhi_= (1<<bits)-1; 
-  
+  int dPhi_= (1<<bits)-1;
+
   if (dPhiBin>(1<<bits)-1)
     dPhiBin = (1<<bits)-1;
-  
+
   if (max==256)
     {
       if (bits == 5)
@@ -272,7 +272,7 @@ float getdPhiFromBin(int dPhiBin, int bits, int max=512)
 
       if (bits == 6)
         dPhi_ = dPhiNLBMap_6bit_256Max[dPhiBin];
-        
+
       if (bits == 7)
         dPhi_ = dPhiNLBMap_7bit_256Max[dPhiBin];
     }
@@ -284,8 +284,8 @@ float getdPhiFromBin(int dPhiBin, int bits, int max=512)
       if (bits == 8)
         dPhi_ = dPhiNLBMap_8bit_512Max[dPhiBin];
     }
-  
-  return ( dPhi_);  
+
+  return ( dPhi_);
 }
 
 float getCLCT(float clct)
@@ -310,13 +310,13 @@ float getCLCT(float clct)
     clct=-4;
   else
     clct=-999;
-    
+
   float clct_ = 0;
   float sign_ = 1;
 
   if (clct<0)
     sign_ = -1;
-  
+
   clct = fabs(clct);
 
   if (clct<=0) // 0
@@ -325,7 +325,7 @@ float getCLCT(float clct)
     clct_ = 1;
   else if (clct<=2)// 3,4
     clct_ = 2;
-  else 
+  else
     clct_ = 3; // 5,6
 
   return (sign_ * clct_);
@@ -338,7 +338,7 @@ float getdEta(float deta)
 
   //if (deta<0)
   //  sign_ = -1;
-  
+
   //deta = fabs(deta);
 
   if (deta<=-5)
@@ -355,7 +355,7 @@ float getdEta(float deta)
     deta_ = 5;
   else if (deta<=6)
     deta_ = 6;
-  else 
+  else
     deta_ = 7;
 
   return ( deta_);
@@ -398,7 +398,7 @@ float getEtafromBin(int etaBin, int bits=5)
     etaBin = ((1<<5)-1);
   if (etaBin<0)
     etaBin = 0;
-      
+
   if (bits>5) bits = 5;
   int shift = 5 - bits;
   int etaInt_ = etaBin << shift;
@@ -416,7 +416,7 @@ float getPt(unsigned long Address)
 	///////////////////////
   int ModeVariables[13][6];
   //int ModeBits[13][6];
-  
+
   for (int i=0;i<13;i++)
     for (int j=0;j<6;j++)
       {
@@ -425,17 +425,17 @@ float getPt(unsigned long Address)
             ModeVariables[i][j] = ModeVariables_Scheme3[i][j];
           }
       }
-  
+
   const char *dir="";
   if (whichScheme == 3)
     dir = dirSchemeC;
-  
+
   int dphi[6] = {-999,-999,-999,-999,-999,-999}, deta[6] = {-999,-999,-999,-999,-999,-999};
 	int clct[4] = {-999,-999,-999,-999}, cscid[4] = {-999,-999,-999,-999};
 	int phis[4] = {-999,-999,-999,-999}, etas[4] = {-999,-999,-999,-999}, mode = 0;;
   int FR[4] = {-999,-999,-999,-999};
   float eta =0 ;
-  
+
   float dPhi12 = dphi[0];
   float dPhi13 = dphi[1];
   float dPhi14 = dphi[2];
@@ -453,18 +453,18 @@ float getPt(unsigned long Address)
   float CLCT2 = clct[1];
   float CLCT3 = clct[2];
   float CLCT4 = clct[3];
-  float FR1 = FR[0]; 
-  float FR2 = FR[1]; 
-  float FR3 = FR[2]; 
+  float FR1 = FR[0];
+  float FR2 = FR[1];
+  float FR3 = FR[2];
   float FR4 = FR[3];
 
   mode =                (Address >> (30-4)) & ((1<<4)-1);
-        
+
   // Decode the Pt LUT Address
   //unsigned long Address = 0x0;
 
   if (verbose) std::cout << "PtAssignment:getPt: decoding, Mode = " << mode << std::endl;
-  
+
   if (mode == 3) // 1-2
     {
       int dPhi12_ =    (Address >> (0))   & ((1<<9)-1);
@@ -480,16 +480,16 @@ float getPt(unsigned long Address)
 
       dPhi12 = dPhi12_;
       TrackEta = getEtafromBin( TrackEta_, 5);
-      
+
       if (sign12 == 0) dPhi12 = -1*dPhi12;
       if (CLCT1Sign == 0) CLCT1 = -1*CLCT1;
       if (CLCT2Sign == 0) CLCT2 = -1*CLCT2;
-      
+
        if (verbose) std::cout << "PtAssignment:getPt: decoding, Addess = 0x" << hex << Address << std::endl;
        if (verbose) std::cout << "PtAssignment:getPt: decoding, dPhi12 = " << dec << dPhi12_ << std::endl;
 
     }
-  
+
   if (mode == 5) // 1-3
     {
       int dPhi13_ =    (Address >> (0))   & ((1<<9)-1);
@@ -505,12 +505,12 @@ float getPt(unsigned long Address)
 
       dPhi13 = dPhi13_;
       TrackEta = getEtafromBin( TrackEta_, 5);
-      
+
       if (sign13 == 0) dPhi13 = -1*dPhi13;
       if (CLCT1Sign == 0) CLCT1 = -1*CLCT1;
       if (CLCT3Sign == 0) CLCT3 = -1*CLCT3;
     }
-    
+
   if (mode == 9) // 1-4
     {
       int dPhi14_ =    (Address >> (0))   & ((1<<9)-1);
@@ -526,12 +526,12 @@ float getPt(unsigned long Address)
 
       dPhi14 = dPhi14_;
       TrackEta = getEtafromBin( TrackEta_, 5);
-      
+
       if (sign14 == 0) dPhi14 = -1*dPhi14;
       if (CLCT1Sign == 0) CLCT1 = -1*CLCT1;
       if (CLCT4Sign == 0) CLCT4 = -1*CLCT4;
     }
-   
+
   if (mode == 6) // 2-3
     {
       int dPhi23_ =    (Address >> (0))   & ((1<<9)-1);
@@ -547,7 +547,7 @@ float getPt(unsigned long Address)
 
       dPhi23 = dPhi23_;
       TrackEta = getEtafromBin( TrackEta_, 5);
-      
+
       if (sign23 == 0) dPhi23 = -1*dPhi23;
       if (CLCT2Sign == 0) CLCT2 = -1*CLCT2;
       if (CLCT3Sign == 0) CLCT3 = -1*CLCT3;
@@ -567,7 +567,7 @@ float getPt(unsigned long Address)
 
       dPhi24 = dPhi24_;
       TrackEta = getEtafromBin( TrackEta_, 5);
-      
+
       if (sign24 == 0) dPhi24 = -1*dPhi24;
       if (CLCT2Sign == 0) CLCT2 = -1*CLCT2;
       if (CLCT4Sign == 0) CLCT4 = -1*CLCT4;
@@ -587,7 +587,7 @@ float getPt(unsigned long Address)
 
       dPhi34 = dPhi34_;
       TrackEta = getEtafromBin( TrackEta_, 5);
-      
+
       if (sign34 == 0) dPhi34 = -1*dPhi34;
       if (CLCT3Sign == 0) CLCT3 = -1*CLCT3;
       if (CLCT4Sign == 0) CLCT4 = -1*CLCT4;
@@ -609,9 +609,9 @@ float getPt(unsigned long Address)
 
       //cout << "getPt: dPhi12: " << dPhi12_ << " " << dPhi12 << endl;
       //cout << "getPt: dPhi23: " << dPhi23_ << " " << dPhi23 << endl;
-      
+
       TrackEta = getEtafromBin( TrackEta_, 5);
-      
+
       if (sign12 == 0) dPhi12 = -1*dPhi12;
       if (sign23 == 0) dPhi23 = -1*dPhi23;
       if (CLCT1Sign == 0) CLCT1 = -1*CLCT1;
@@ -631,7 +631,7 @@ float getPt(unsigned long Address)
       dPhi12 = getdPhiFromBin( dPhi12_, 7, 512 );
       dPhi24 = getdPhiFromBin( dPhi24_, 5, 256 );
       TrackEta = getEtafromBin( TrackEta_, 5);
-      
+
       if (sign12 == 0) dPhi12 = -1*dPhi12;
       if (sign24 == 0) dPhi24 = -1*dPhi24;
       if (CLCT1Sign == 0) CLCT1 = -1*CLCT1;
@@ -651,7 +651,7 @@ float getPt(unsigned long Address)
       dPhi13 = getdPhiFromBin( dPhi13_, 7, 512 );
       dPhi34 = getdPhiFromBin( dPhi34_, 5, 256 );
       TrackEta = getEtafromBin( TrackEta_, 5);
-      
+
       if (sign13 == 0) dPhi13 = -1*dPhi13;
       if (sign34 == 0) dPhi34 = -1*dPhi34;
       if (CLCT1Sign == 0) CLCT1 = -1*CLCT1;
@@ -670,7 +670,7 @@ float getPt(unsigned long Address)
       dPhi23 = getdPhiFromBin( dPhi23_, 7, 512 );
       dPhi34 = getdPhiFromBin( dPhi34_, 6, 256 );
       TrackEta = getEtafromBin( TrackEta_, 5);
-      
+
       if (sign23 == 0) dPhi23 = -1*dPhi23;
       if (sign34 == 0) dPhi34 = -1*dPhi34;
       if (CLCT2Sign == 0) CLCT2 = -1*CLCT2;
@@ -684,18 +684,18 @@ float getPt(unsigned long Address)
       int sign34 =          (Address >> (0+7+5+6+1)) & ((1<<1)-1);
       FR1 =                 (Address >> (0+7+5+6+1+1)) & ((1<<1)-1);
       int TrackEta_ =       (Address >> (0+7+5+6+1+1+1)) & ((1<<5)-1);
-        
+
       dPhi12 = getdPhiFromBin( dPhi12_, 7, 512 );
       dPhi23 = getdPhiFromBin( dPhi23_, 5, 256 );
       dPhi34 = getdPhiFromBin( dPhi34_, 6, 256 );
       TrackEta = getEtafromBin( TrackEta_, 5 );
-        
+
       if (sign23 == 0) dPhi23 = -1*dPhi23;
       if (sign34 == 0) dPhi34 = -1*dPhi34;
     }
-  
 
-  
+
+
     	if(verbose){
   if (mode == 15) // 1-2-3-4
     cout << "Mode 15: " << hex << Address << " " << dec << dPhi12 << " " << dPhi23 <<  " " << dPhi34 << " " << " " << FR1 << " " << TrackEta << " " << dec << endl;
@@ -710,7 +710,7 @@ float getPt(unsigned long Address)
    if (mode == 3)
     cout << "Mode 3: " << hex << Address << " " << dec << dPhi12 << " " << " " << FR1 << " " << TrackEta << " " << dec << endl;
       }
-  
+
   // now use rebinned values
   dphi[0] = dPhi12;
   dphi[1] = dPhi13;
@@ -733,31 +733,31 @@ float getPt(unsigned long Address)
   FR[1] = FR2;
   FR[2] = FR3;
   FR[3] = FR4;
-      
-           
+
+
 	if(verbose){
 		for(int f=0;f<4;f++){
 			std::cout<<"\nphis["<<f<<"] = "<<phis[f]<<" and etas = "<<etas[f]<<std::endl;
 			std::cout<<"\nclct["<<f<<"] = "<<clct[f]<<" and cscid = "<<cscid[f]<<std::endl;
 		}
-	
+
 		for(int u=0;u<6;u++)
 			std::cout<<"\ndphi["<<u<<"] = "<<dphi[u]<<" and deta = "<<deta[u]<<std::endl;
 	}
-	
+
 	float MpT = -1;//final pT to return
-	
-	
+
+
 	///////////////////////////////////////////////////////////////////////////////
 	//// Variables is a array of all possible variables used in pT calculation ////
 	///////////////////////////////////////////////////////////////////////////////
-	
+
 	int size[13] = {5,0,5,5,5,0,5,5,5,5,5,4,4};
 	int Variables[24] = {dphi[0], dphi[1], dphi[2], dphi[3], dphi[4], dphi[5], deta[0], deta[1], deta[2], deta[3], deta[4], deta[5],
                        clct[0], clct[1], clct[2], clct[3], cscid[0], cscid[1], cscid[2], cscid[3], FR[0], FR[1], FR[2], FR[3]};
-	
-	
-		
+
+
+
 	////////////////////////
 	//// pT Calculation ////
 	////////////////////////
@@ -771,58 +771,58 @@ float getPt(unsigned long Address)
         goodMode = true;
         break;
       }
-  
+
   if (goodMode)
     for(int i=3;i<16;i++){
-	
+
 		if(i != mode)
 			continue;
-			
+
 		//std::cout<<"\nMode = "<<mode<<"\n\n";
-		
+
 		Forest *forest = new Forest();
 		//const char *dir = "L1Trigger/L1EndcapMuonTrackFinder/plugins/ModeVariables/trees";
 		std::stringstream ss;
     ss << dir << "/" << mode;//
-		
+
 		forest-> loadForestFromXML(ss.str().c_str(),64);
-		
+
 		std::vector<Double_t> Data;
 		Data.push_back(1.0);
 		Data.push_back(eta);
 		for(int y=0;y<size[mode-3];y++){
-			
+
 			Data.push_back(Variables[ModeVariables[mode-3][y]]);
 			if(verbose) std::cout<<"Generalized Variables "<<y<<" "<<Variables[ModeVariables[mode-3][y]]<<"\n";
 		}
-		
+
 		if(verbose){
       std::cout<<"Data.size() = "<<Data.size()<<"\n";
-      for(int i=0;i<5;i++)  
+      for(int i=0;i<5;i++)
         std::cout<<"Data["<<i<<"] = "<<Data[i]<<"\n";
 		}
-		
+
 		Event *event = new Event();
 		event->data = Data;
-		
+
 		std::vector<Event*> vevent;
 		vevent.push_back(event);
-		
+
 		forest->predictEvents(vevent,64);
-		
+
 		float OpT = vevent[0]->predictedValue;
 		MpT = 1/OpT;
 
-    
+
     if (MpT<0.0) MpT = 1.0;
     if (MpT>200.0) MpT = 200.0;
-                       
+
     float BDTPt = MpT;
     float BDTPt__ = MpT;
 
     if (useCorr)
       {
-      
+
         TrackEta = getEtaInt(TrackEta, 5);
 
         if (i==3) // 1-2
@@ -836,21 +836,21 @@ float getPt(unsigned long Address)
 
         if (i==7) // 1-2-3
           BDTPt__ =  getMaxPT(BDTPt, fabs(TrackEta), dPhi12, dPhi23, 0*dPhi34, 95);
-        
-        if (i==11) // 1-2-4 
+
+        if (i==11) // 1-2-4
           BDTPt__ =  getMaxPT(BDTPt, fabs(TrackEta), dPhi12, 0*dPhi23, 0*dPhi34, 95);
 
-        if (i==13) // 1-3-4 
+        if (i==13) // 1-3-4
           BDTPt__ =  getMaxPT(BDTPt, fabs(TrackEta), 0*dPhi12, 0*dPhi23, dPhi34, 95);
 
-        if (i==11) // 2-3-4 
+        if (i==11) // 2-3-4
           BDTPt__ =  getMaxPT(BDTPt, fabs(TrackEta), 0*dPhi12, dPhi23, dPhi34, 95);
 
-        if (i==15) // 1-2-3-4 
+        if (i==15) // 1-2-3-4
           BDTPt__ =  getMaxPT(BDTPt, fabs(TrackEta), dPhi12, dPhi23, dPhi34, 95);
 
         cout << "getMaxPT: eta = " << TrackEta << ",  old = " << BDTPt << " , new = " << BDTPt__ << endl;
-        MpT = BDTPt__; 
+        MpT = BDTPt__;
       }
 	}
 
@@ -861,7 +861,7 @@ void makeLUT()//
 {
   // ofstream file2("LUT2.dat",ios::out);
 
-  
+
   if (true)
     for (unsigned long i=0; i<((1<<26)-1); i++)
       {
@@ -870,7 +870,7 @@ void makeLUT()//
         float BDTPt1 = fabs(getPt(i));
 
         if (BDTPt1>140.0) BDTPt1 = 139.9999;
-                            
+
         //int index=0;
         for (int pts=0; pts<31; pts++)
           {
@@ -881,18 +881,18 @@ void makeLUT()//
                 break;
               }
           }
-        
+
         //file << index << endl;
         //file2 << std::setw(20) <<  i << std::setw(20) << mode << std::setw(20) << getPt(i) << endl;
-        
+
       }
-  
+
   /*
   for (int i=0;i<10;i++) cout << i << " " ;
   cout << endl;
   cout << endl;
   cout << endl;
-  
+
   for (int dp12=0;dp12<((1<<7));dp12++)
     {
        cout << "makeLUT, dp12 =  " << dp12 << endl;
@@ -903,17 +903,17 @@ void makeLUT()//
           int dPhi12 = dp12;
         int dPhi23 = dp23;
         int CLCT1 = 10;
-        
+
         int dPhi12Sign = 1;
         int dPhi23Sign = 1;
         int dPhi34Sign = 1;
         int dEta13Sign = 1;
         int CLCT1Sign = 1;
-        
+
         if (dPhi12<0) dPhi12Sign = -1;
         if (dPhi23<0) dPhi23Sign = -1;
         if (CLCT1<0) CLCT1Sign = -1;
-        
+
         // Make Pt LUT Address
         int dPhi12_ = dp12;//getNLBdPhiBin(dPhi12, 7, 512);
         int dPhi23_ = dp23;//getNLBdPhiBin(dPhi23, 5, 256);
@@ -942,10 +942,10 @@ void makeLUT()//
         int dPhi23__ =    (Address >> (0+7))   & ((1<<5)-1);
         int dPhi12test = getdPhiFromBin( dPhi12__, 7, 512 );
         int dPhi23test = getdPhiFromBin( dPhi23__, 5, 256 );
-        
+
         cout << "makeLUT: dPhi12: " << dPhi12_ << " " << dPhi12__ << " " << dPhi12test << endl;
         cout << "makeLUT: dPhi23: " << dPhi23_ << " " << dPhi23__ << " " << dPhi23test << endl;
-   
+
         file <<  getPt(Address) << endl;
       }
     }
@@ -956,10 +956,10 @@ void makeLUT()//
 float CalculatePt(L1TMuon::InternalTrack track , const edm::EventSetup& es){///add this bobby
   edm::ESHandle<CSCGeometry> cscGeometry;///add this bobby
 	es.get<MuonGeometryRecord>().get(cscGeometry);///add this bobby
-  
+
   if (makeLUT_)
     makeLUT();
-  
+
 	bool verbose = false;
 
   ///////////////////////
@@ -967,7 +967,7 @@ float CalculatePt(L1TMuon::InternalTrack track , const edm::EventSetup& es){///a
 	///////////////////////
   /*int ModeVariables[13][6];
   //int ModeBits[13][6];
-  
+
   for (int i=0;i<13;i++)
     for (int j=0;j<6;j++)
       {
@@ -976,7 +976,7 @@ float CalculatePt(L1TMuon::InternalTrack track , const edm::EventSetup& es){///a
             ModeVariables[i][j] = ModeVariables_Scheme3[i][j];
           }
       }*/
-  
+
   //const char *dir="";//maybe need to keep this?
   //if (whichScheme == 3)
   //  dir = dirSchemeC;
@@ -985,22 +985,22 @@ float CalculatePt(L1TMuon::InternalTrack track , const edm::EventSetup& es){///a
 	int clct[4] = {-999,-999,-999,-999}, cscid[4] = {-999,-999,-999,-999};
 	int phis[4] = {-999,-999,-999,-999}, etas[4] = {-999,-999,-999,-999}, mode = 0;;
   int FR[4] = {-999,-999,-999,-999};
-	
+
 	float theta_angle = ((track.theta)*0.2851562 + 8.5)*(3.14159265359/180);//2851562 //2874016
 	float eta = (-1)*log(tan(theta_angle/2));
 
 	const TriggerPrimitiveStationMap stubs = track.getStubs();
 
   //track.print(std::cout);
-		
+
 	if(verbose) std::cout<<"Track eta = "<<eta<<" and has hits in stations ";//
-	
+
 	int x=0;             //12
 	for(unsigned int s=8;s<12;s++){
 		if((stubs.find(s)->second).size() == 1){
-			
-		
-			if(verbose) std::cout<< "s= " << s << " " << endl; 
+
+
+			if(verbose) std::cout<< "s= " << s << " " << endl;
 			etas[s-8] = (fabs((stubs.find(s)->second)[0]->getCMSGlobalEta()) + 0.9)/(0.0125);
       	if(verbose) std::cout<< "eta= " << etas[s-8] << " " << endl;
 			phis[s-8] = track.phis[x];//(stubs.find(s)->second)[0]->getCMSGlobalPhi();//
@@ -1015,19 +1015,19 @@ float CalculatePt(L1TMuon::InternalTrack track , const edm::EventSetup& es){///a
       const CSCChamber* layer = cscGeometry->chamber((stubs.find(s)->second)[0]->detId<CSCDetId>());///add this bobby
       LocalPoint llc(0.,0.,0.);///add this bobby
       GlobalPoint glc = layer->toGlobal(llc);///add this bobby
-            
-			
+
+
 			int FR_ = 0;///add this bobby
       int coord[5] = {586,686,815,924,1013};///add this bobby
       for(int i=0;i<5;i++){///add this bobby
 
         if((glc.z() < (coord[i] + 7)) && (glc.z() > (coord[i] - 7)))///add this bobby
           FR_ = 1;///add this bobby
-                
+
         FR[s-8] = FR_;
-       
+
       }///add this bobby
-        
+
 			switch(s-7){
       case 1: mode |= 1;break;
       case 2: mode |= 2;break;
@@ -1038,13 +1038,13 @@ float CalculatePt(L1TMuon::InternalTrack track , const edm::EventSetup& es){///a
 			x++;
 		}
 	}
-	
-	if(verbose) std::cout<<"\nMode = "<<mode<<std::endl; 
-	
+
+	if(verbose) std::cout<<"\nMode = "<<mode<<std::endl;
+
 	//////////////////////////////////////////////////
 	//// Calculate Delta Phi and Eta Combinations ////
 	//////////////////////////////////////////////////
-	
+
   if(phis[0] > 0 && phis[1] > 0){ // 1 - 2
 		dphi[0] = phis[1] - phis[0];
 		deta[0] = etas[1] - etas[0];
@@ -1156,7 +1156,7 @@ float CalculatePt(L1TMuon::InternalTrack track , const edm::EventSetup& es){///a
       std::cout <<  std::setw(10) << "CLCT4: " << clct[3] << std::setw(10) << clct4__ << std::endl;
       std::cout <<  std::setw(10) << "eta   : " << eta << std::setw(10) << eta__ << std::endl;
     }
-  
+
   if (mode==7) // 1-2-3
     {
       float dPhi12__ = getNLBdPhi(dphi[0],7, 512);
@@ -1224,7 +1224,7 @@ float CalculatePt(L1TMuon::InternalTrack track , const edm::EventSetup& es){///a
       std::cout <<  std::setw(10) << "eta   : " << eta << std::setw(10) << eta__ << std::endl;
     }
     }
-  
+
   float dPhi12 = dphi[0];
   float dPhi13 = dphi[1];
   float dPhi14 = dphi[2];
@@ -1242,13 +1242,13 @@ float CalculatePt(L1TMuon::InternalTrack track , const edm::EventSetup& es){///a
   float CLCT2 = clct[1];
   float CLCT3 = clct[2];
   float CLCT4 = clct[3];
-  float FR1 = FR[0]; 
-  float FR2 = FR[1]; 
-  float FR3 = FR[2]; 
+  float FR1 = FR[0];
+  float FR2 = FR[1];
+  float FR3 = FR[2];
   float FR4 = FR[3];
 
   unsigned long Address = 0x0;
-  
+
 	if (doComp && mode==3)
 	  {
 
@@ -1256,11 +1256,11 @@ float CalculatePt(L1TMuon::InternalTrack track , const edm::EventSetup& es){///a
       //int dEta13Sign = 1;
       int CLCT1Sign = 1;
       int CLCT2Sign = 1;
-      
+
       if (dPhi12<0) dPhi12Sign = -1;
       if (CLCT1<0) CLCT1Sign = -1;
       if (CLCT2<0) CLCT2Sign = -1;
-      
+
       // Make Pt LUT Address
       int dPhi12_ = fabs(dPhi12);
       int sign12_ = dPhi12Sign > 0 ? 1 : 0;
@@ -1273,7 +1273,7 @@ float CalculatePt(L1TMuon::InternalTrack track , const edm::EventSetup& es){///a
       int FR2_ = FR2;
       int eta_ = getEtaInt(TrackEta, 5);
       int Mode_ = mode;
-      
+
       Address += ( dPhi12_ & ((1<<9)-1))    << (0);
       Address += ( sign12_ & ((1<<1)-1))    << (0+9);
       Address += ( dEta12_ & ((1<<3)-1))    << (0+9+1);
@@ -1294,11 +1294,11 @@ float CalculatePt(L1TMuon::InternalTrack track , const edm::EventSetup& es){///a
       //int dEta13Sign = 1;
       int CLCT1Sign = 1;
       int CLCT3Sign = 1;
-      
+
       if (dPhi13<0) dPhi13Sign = -1;
       if (CLCT1<0) CLCT1Sign = -1;
       if (CLCT3<0) CLCT3Sign = -1;
-      
+
       // Make Pt LUT Address
       int dPhi13_ = fabs(dPhi13);
       int sign13_ = dPhi13Sign > 0 ? 1 : 0;
@@ -1311,7 +1311,7 @@ float CalculatePt(L1TMuon::InternalTrack track , const edm::EventSetup& es){///a
       int FR3_ = FR3;
       int eta_ = getEtaInt(TrackEta, 5);
       int Mode_ = mode;
-      
+
       Address += ( dPhi13_ & ((1<<9)-1))    << (0);
       Address += ( sign13_ & ((1<<1)-1))    << (0+9);
       Address += ( dEta13_ & ((1<<3)-1))    << (0+9+1);
@@ -1324,7 +1324,7 @@ float CalculatePt(L1TMuon::InternalTrack track , const edm::EventSetup& es){///a
       Address += ( eta_  & ((1<<5)-1))      << (0+9+1+3+2+1+2+1+1+1);
       Address += ( Mode_ & ((1<<4)-1))      << (0+9+1+3+2+1+2+1+1+1+5);
 	  }
-    
+
   if (doComp && mode==9)
 	  {
       // signed full precision dPhi12
@@ -1332,11 +1332,11 @@ float CalculatePt(L1TMuon::InternalTrack track , const edm::EventSetup& es){///a
       //int dEta14Sign = 1;
       int CLCT1Sign = 1;
       int CLCT4Sign = 1;
-      
+
       if (dPhi14<0) dPhi14Sign = -1;
       if (CLCT1<0) CLCT1Sign = -1;
       if (CLCT4<0) CLCT4Sign = -1;
-      
+
       // Make Pt LUT Address
       int dPhi14_ = fabs(dPhi14);
       int sign14_ = dPhi14Sign > 0 ? 1 : 0;
@@ -1349,7 +1349,7 @@ float CalculatePt(L1TMuon::InternalTrack track , const edm::EventSetup& es){///a
       int FR4_ = FR4;
       int eta_ = getEtaInt(TrackEta, 5);
       int Mode_ = mode;
-      
+
       Address += ( dPhi14_ & ((1<<9)-1))    << (0);
       Address += ( sign14_ & ((1<<1)-1))    << (0+9);
       Address += ( dEta14_ & ((1<<3)-1))    << (0+9+1);
@@ -1369,11 +1369,11 @@ float CalculatePt(L1TMuon::InternalTrack track , const edm::EventSetup& es){///a
       //int dEta23Sign = 1;
       int CLCT2Sign = 1;
       int CLCT3Sign = 1;
-      
+
       if (dPhi23<0) dPhi23Sign = -1;
       if (CLCT2<0) CLCT2Sign = -1;
       if (CLCT3<0) CLCT3Sign = -1;
-      
+
       // Make Pt LUT Address
       int dPhi23_ = fabs(dPhi23);
       int sign23_ = dPhi23Sign > 0 ? 1 : 0;
@@ -1386,7 +1386,7 @@ float CalculatePt(L1TMuon::InternalTrack track , const edm::EventSetup& es){///a
       int FR3_ = FR3;
       int eta_ = getEtaInt(TrackEta, 5);
       int Mode_ = mode;
-      
+
       Address += ( dPhi23_ & ((1<<9)-1))    << (0);
       Address += ( sign23_ & ((1<<1)-1))    << (0+9);
       Address += ( dEta23_ & ((1<<3)-1))    << (0+9+1);
@@ -1406,11 +1406,11 @@ float CalculatePt(L1TMuon::InternalTrack track , const edm::EventSetup& es){///a
       //int dEta24Sign = 1;
       int CLCT2Sign = 1;
       int CLCT4Sign = 1;
-      
+
       if (dPhi24<0) dPhi24Sign = -1;
       if (CLCT2<0) CLCT2Sign = -1;
       if (CLCT4<0) CLCT4Sign = -1;
-      
+
       // Make Pt LUT Address
       int dPhi24_ = fabs(dPhi24);
       int sign24_ = dPhi24Sign > 0 ? 1 : 0;
@@ -1423,7 +1423,7 @@ float CalculatePt(L1TMuon::InternalTrack track , const edm::EventSetup& es){///a
       int FR3_ = FR3;
       int eta_ = getEtaInt(TrackEta, 5);
       int Mode_ = mode;
-      
+
       Address += ( dPhi24_ & ((1<<9)-1))    << (0);
       Address += ( sign24_ & ((1<<1)-1))    << (0+9);
       Address += ( dEta24_ & ((1<<3)-1))    << (0+9+1);
@@ -1442,11 +1442,11 @@ float CalculatePt(L1TMuon::InternalTrack track , const edm::EventSetup& es){///a
       //int dEta34Sign = 1;
       int CLCT3Sign = 1;
       int CLCT4Sign = 1;
-      
+
       if (dPhi34<0) dPhi34Sign = -1;
       if (CLCT3<0) CLCT3Sign = -1;
       if (CLCT4<0) CLCT4Sign = -1;
-      
+
       // Make Pt LUT Address
       int dPhi34_ = fabs(dPhi34);
       int sign34_ = dPhi34Sign > 0 ? 1 : 0;
@@ -1459,7 +1459,7 @@ float CalculatePt(L1TMuon::InternalTrack track , const edm::EventSetup& es){///a
       int FR4_ = FR4;
       int eta_ = getEtaInt(TrackEta, 5);
       int Mode_ = mode;
-      
+
       Address += ( dPhi34_ & ((1<<9)-1))    << (0);
       Address += ( sign34_ & ((1<<1)-1))    << (0+9);
       Address += ( dEta34_ & ((1<<3)-1))    << (0+9+1);
@@ -1472,7 +1472,7 @@ float CalculatePt(L1TMuon::InternalTrack track , const edm::EventSetup& es){///a
       Address += ( eta_  & ((1<<5)-1))      << (0+9+1+3+2+1+2+1+1+1);
       Address += ( Mode_ & ((1<<4)-1))      << (0+9+1+3+2+1+2+1+1+1+5);
 	  }
-       
+
   if (doComp && mode==7) // 1-2-3
     {
       int dPhi12Sign = 1;
@@ -1480,12 +1480,12 @@ float CalculatePt(L1TMuon::InternalTrack track , const edm::EventSetup& es){///a
       //int dPhi34Sign = 1;
       //int dEta13Sign = 1;
       int CLCT1Sign = 1;
-      
+
       if (dPhi12<0) dPhi12Sign = -1;
       if (dPhi23<0) dPhi23Sign = -1;
       //if (dPhi34<0) dPhi34Sign = -1;
       if (CLCT1<0) CLCT1Sign = -1;
-      
+
       // Make Pt LUT Address
       int dPhi12_ = getNLBdPhiBin(dPhi12, 7, 512);
       int dPhi23_ = getNLBdPhiBin(dPhi23, 5, 256);
@@ -1497,7 +1497,7 @@ float CalculatePt(L1TMuon::InternalTrack track , const edm::EventSetup& es){///a
       int FR1_ = FR1;
       int eta_ = getEtaInt(TrackEta, 5);
       int Mode_ = mode;
-      
+
       Address += ( dPhi12_ & ((1<<7)-1))    << (0);
       Address += ( dPhi23_ & ((1<<5)-1))    << (0+7);
       Address += ( sign12_  & ((1<<1)-1))   << (0+7+5);
@@ -1509,18 +1509,18 @@ float CalculatePt(L1TMuon::InternalTrack track , const edm::EventSetup& es){///a
       Address += ( eta_  & ((1<<5)-1))      << (0+7+5+1+1+3+2+1+1);
       Address += ( Mode_ & ((1<<4)-1))      << (0+7+5+1+1+3+2+1+1+5);
     }
-	    
+
   if (doComp && mode==11)
     {
       int dPhi12Sign = 1;
       int dPhi24Sign = 1;
       //int dEta14Sign = 1;
       int CLCT1Sign = 1;
-      
+
       if (dPhi12<0) dPhi12Sign = -1;
       if (dPhi24<0) dPhi24Sign = -1;
       if (CLCT1<0) CLCT1Sign = -1;
-      
+
       // Make Pt LUT Address
       int dPhi12_ = getNLBdPhiBin(dPhi12, 7, 512);
       int dPhi24_ = getNLBdPhiBin(dPhi24, 5, 256);
@@ -1532,7 +1532,7 @@ float CalculatePt(L1TMuon::InternalTrack track , const edm::EventSetup& es){///a
       int FR1_ = FR1;
       int eta_ = getEtaInt(TrackEta, 5);
       int Mode_ = mode;
-      
+
       Address += ( dPhi12_ & ((1<<7)-1))    << (0);
       Address += ( dPhi24_ & ((1<<5)-1))    << (0+7);
       Address += ( sign12_ & ((1<<1)-1))    << (0+7+5);
@@ -1550,11 +1550,11 @@ float CalculatePt(L1TMuon::InternalTrack track , const edm::EventSetup& es){///a
       int dPhi34Sign = 1;
       //int dEta14Sign = 1;
       int CLCT1Sign = 1;
-      
+
       if (dPhi13<0) dPhi13Sign = -1;
       if (dPhi34<0) dPhi34Sign = -1;
       if (CLCT1<0) CLCT1Sign = -1;
-      
+
       // Make Pt LUT Address
       int dPhi13_ = getNLBdPhiBin(dPhi13, 7, 512);
       int dPhi34_ = getNLBdPhiBin(dPhi34, 5, 256);
@@ -1566,7 +1566,7 @@ float CalculatePt(L1TMuon::InternalTrack track , const edm::EventSetup& es){///a
       int FR1_ = FR1;
       int eta_ = getEtaInt(TrackEta, 5);
       int Mode_ = mode;
-      
+
       Address += ( dPhi13_ & ((1<<7)-1))    << (0);
       Address += ( dPhi34_ & ((1<<5)-1))    << (0+7);
       Address += ( sign13_  & ((1<<1)-1))   << (0+7+5);
@@ -1577,7 +1577,7 @@ float CalculatePt(L1TMuon::InternalTrack track , const edm::EventSetup& es){///a
       Address += ( FR1_  & ((1<<1)-1))      << (0+7+5+1+1+3+2+1);
       Address += ( eta_  & ((1<<5)-1))      << (0+7+5+1+1+3+2+1+1);
       Address += ( Mode_ & ((1<<4)-1))      << (0+7+5+1+1+3+2+1+1+5);
-    }                  
+    }
 
   if (doComp && mode==14) // 2-3-4
     {
@@ -1585,11 +1585,11 @@ float CalculatePt(L1TMuon::InternalTrack track , const edm::EventSetup& es){///a
       int dPhi34Sign = 1;
       //int dEta24Sign = 1;
       int CLCT2Sign = 1;
-      
+
       if (dPhi23<0) dPhi23Sign = -1;
       if (dPhi34<0) dPhi34Sign = -1;
       if (CLCT2<0) CLCT2Sign = -1;
-      
+
       // Make Pt LUT Address
       int dPhi23_ = getNLBdPhiBin(dPhi23, 7, 512);
       int dPhi34_ = getNLBdPhiBin(dPhi34, 5, 256);
@@ -1600,7 +1600,7 @@ float CalculatePt(L1TMuon::InternalTrack track , const edm::EventSetup& es){///a
       int CLCT2Sign_ = CLCT2Sign > 0 ? 1 : 0;
       int eta_ = getEtaInt(TrackEta, 5);
       int Mode_ = mode;
-      
+
       Address += ( dPhi23_ & ((1<<7)-1))    << (0);
       Address += ( dPhi34_ & ((1<<6)-1))    << (0+7);
       Address += ( sign23_ & ((1<<1)-1))    << (0+7+6);
@@ -1617,11 +1617,11 @@ float CalculatePt(L1TMuon::InternalTrack track , const edm::EventSetup& es){///a
       int dPhi12Sign = 1;
       int dPhi23Sign = 1;
       int dPhi34Sign = 1;
-      
+
       if (dPhi12<0) dPhi12Sign = -1;
       if (dPhi23<0) dPhi23Sign = -1;
       if (dPhi34<0) dPhi34Sign = -1;
-      
+
       if (dPhi12Sign==-1 && dPhi23Sign==-1 && dPhi34Sign==-1)
         { dPhi12Sign=1;dPhi23Sign=1;dPhi34Sign=1;}
       else if (dPhi12Sign==-1 && dPhi23Sign==1 && dPhi34Sign==1)
@@ -1630,7 +1630,7 @@ float CalculatePt(L1TMuon::InternalTrack track , const edm::EventSetup& es){///a
         { dPhi12Sign=1;dPhi23Sign=1;dPhi34Sign=-1;}
       else if (dPhi12Sign==-1 && dPhi23Sign==1 && dPhi34Sign==-1)
         { dPhi12Sign=1;dPhi23Sign=-1;dPhi34Sign=1;}
-      
+
       // Make Pt LUT Address
       int dPhi12_ = getNLBdPhiBin(dPhi12, 7, 512);
       int dPhi23_ = getNLBdPhiBin(dPhi23, 5, 256);
@@ -1640,7 +1640,7 @@ float CalculatePt(L1TMuon::InternalTrack track , const edm::EventSetup& es){///a
       int FR1_ = FR1;
       int eta_ = getEtaInt(TrackEta, 5);
       int Mode_ = mode;
-      
+
       Address += ( dPhi12_ & ((1<<7)-1)) << 0;
       Address += ( dPhi23_ & ((1<<5)-1)) << (0+7);
       Address += ( dPhi34_ & ((1<<6)-1)) << (0+7+5);
@@ -1650,7 +1650,7 @@ float CalculatePt(L1TMuon::InternalTrack track , const edm::EventSetup& es){///a
       Address += ( eta_ & ((1<<5)-1))    << (0+7+5+6+1+1+1);
       Address += ( Mode_ & ((1<<4)-1))   << (0+7+5+6+1+1+1+5);
     }
-  
+
   return getPt(Address);
 }
 

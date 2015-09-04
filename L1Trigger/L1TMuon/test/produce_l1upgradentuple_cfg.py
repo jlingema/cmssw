@@ -87,43 +87,16 @@ process.load('L1Trigger.L1EndcapMuonTrackFinder.L1TMuonTriggerPrimitiveProducer_
 
 path = "L1Trigger/L1OverlapMuonTrackFinder/data/"
 # OMTF emulator configuration
-process.omtfEmulator = cms.EDProducer("OMTFProducer",
-                                      TriggerPrimitiveSrc=cms.InputTag('L1TMuonTriggerPrimitives'),
-                                      dumpResultToXML=cms.bool(False),
-                                      XMLDumpFileName=cms.string("TestEvents.xml"),
-                                      dumpGPToXML=cms.bool(False),
-                                      readEventsFromXML=cms.bool(False),
-                                      eventsXMLFiles=cms.vstring("TestEvents.xml"),
-                                      dropRPCPrimitives=cms.bool(False),
-                                      dropDTPrimitives=cms.bool(False),
-                                      dropCSCPrimitives=cms.bool(False),
-                                      omtf=cms.PSet(
-                                          configXMLFile=cms.string(path+"hwToLogicLayer_721_5760.xml"),
-                                          patternsXMLFiles=cms.vstring(path+"Patterns_ipt4_31_5760.xml"),
-                                      )
-                                      )
+# OMTF emulator configuration
+process.load('L1Trigger.L1OverlapMuonTrackFinder.OMTFProducer_cfi')
+
 process.L1TMuonEndcapTrackFinder = cms.EDProducer(
     'L1TMuonUpgradedTrackFinder',
-    doGen=cms.untracked.bool(True),
-    genSrc=cms.untracked.InputTag("genParticles"),
-    treeBaseDir=cms.string("L1Trigger/L1EndcapMuonTrackFinder/plugins/ModeVariables/trees"),
-    primitiveSrcs=cms.VInputTag(
-        cms.InputTag('L1TMuonTriggerPrimitives', 'CSC'),
-        cms.InputTag('L1TMuonTriggerPrimitives', 'DT'),
-        cms.InputTag('L1TMuonTriggerPrimitives', 'RPC')
+    primitiveSrcs = cms.VInputTag(
+    cms.InputTag('L1TMuonTriggerPrimitives', 'CSC'),
+    cms.InputTag('L1TMuonTriggerPrimitives', 'DT'),
+    cms.InputTag('L1TMuonTriggerPrimitives', 'RPC')
     ),
-    converterSrcs=cms.VInputTag(
-        cms.InputTag('L1CSCTFTrackConverter'),
-        cms.InputTag('L1DTTFTrackConverter'),
-        cms.InputTag('L1RPCbTFTrackConverter'),
-        cms.InputTag('L1RPCfTFTrackConverter'),
-        cms.InputTag('L1TMuonSimpleDeltaEtaHitMatcher')
-    ),
-    lutParam=cms.PSet(
-        isBeamStartConf=cms.untracked.bool(True),
-        ReadPtLUT=cms.bool(False),
-        PtMethod=cms.untracked.uint32(32)
-    )
 )
 
 # BMTF Emulator
@@ -140,7 +113,6 @@ process.uGMTCaloInputProducer = cms.EDProducer("l1t::uGMTCaloInputProducer",
 )
 # WORKAROUNDS FOR WRONG SCALES / MISSING COLLECTIONS:
 process.bmtfConverter = cms.EDProducer("l1t::BMTFConverter",)
-process.omtfConverter = cms.EDProducer("l1t::OMTFConverter",)
 
 # Adjust input tags if running on GEN-SIM-RAW (have to re-digi)
 if SAMPLE == "zmumu" or SAMPLE == "minbias":
@@ -159,8 +131,8 @@ process.load("L1TriggerDPG.L1Ntuples.l1MuonUpgradeTreeProducer_cfi")
 
 process.load("L1Trigger.L1TMuon.microgmtemulator_cfi")
 
-process.microGMTEmulator.overlapTFInput = cms.InputTag("omtfConverter", "ConvOMTFMuons")
-process.l1MuonUpgradeTreeProducer.omtfTag = cms.InputTag("omtfConverter", "ConvOMTFMuons")
+process.microGMTEmulator.overlapTFInput = cms.InputTag("omtfEmulator", "OMTF")
+process.l1MuonUpgradeTreeProducer.omtfTag = cms.InputTag("omtfEmulator", "OMTF")
 process.microGMTEmulator.forwardTFInput = cms.InputTag("L1TMuonEndcapTrackFinder", "EMUTF")
 process.l1MuonUpgradeTreeProducer.emtfTag = cms.InputTag("L1TMuonEndcapTrackFinder", "EMUTF")
 process.microGMTEmulator.barrelTFInput = cms.InputTag("bmtfConverter", "ConvBMTFMuons")
@@ -235,7 +207,6 @@ process.L1TMuonSeq = cms.Sequence(
     + process.bmtfEmulator
     + process.bmtfConverter
     + process.omtfEmulator
-    + process.omtfConverter
     + process.L1TMuonEndcapTrackFinder
     + process.L1TCaloStage2_PPFromRaw
     + process.uGMTCaloInputProducer
