@@ -16,6 +16,18 @@ namespace l1t {
 
   public:
     Muon() {};
+
+    Muon( const LorentzVector& p4,
+      int pt=0,
+      int eta=0,
+      int phi=0,
+      int qual=0,
+      int charge=0,
+      int chargeValid=0,
+      int iso=0,
+      int something=0,
+      int tag=0);
+
     Muon( const LorentzVector& p4,
       const RegionalRef& origin,
       int pt=0,

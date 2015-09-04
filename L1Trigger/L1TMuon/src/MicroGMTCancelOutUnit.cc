@@ -40,12 +40,12 @@ MicroGMTCancelOutUnit::setCancelOutBits(L1TGMTInternalWedges& wedges, tftype tra
   if (trackFinder == bmtf) {
     maxWedges = 12;
   }
-  for (int currentWedge = 1; currentWedge <= maxWedges; ++currentWedge) {
+  for (int currentWedge = 0; currentWedge < maxWedges; ++currentWedge) {
     for (auto mu : wedges.at(currentWedge)) {
       coll1.push_back(mu);
     }
     // handle wrap around: max "wedge" has to be compared to first "wedge"
-    int neighbourWedge = (currentWedge % maxWedges) + 1;
+    int neighbourWedge = currentWedge % maxWedges;
     for (auto mu : wedges.at(neighbourWedge)) {
       coll2.push_back(mu);
     }
@@ -80,7 +80,6 @@ MicroGMTCancelOutUnit::setCancelOutBitsOverlapBarrel(L1TGMTInternalWedges& omtfS
     // e.g. OMTF 0 with BMTF 0, 1, 2, 3, OMTF 2 with BMTF 4, 5, 6, 7 etc.
     for (int i = 0; i < 4; ++i) {
       int currentWedge = (currentSector * 2 + i) % 12;
-
       for (auto bmtfMuon : bmtfWedges.at(currentWedge)) {
         coll2.push_back(bmtfMuon);
       }

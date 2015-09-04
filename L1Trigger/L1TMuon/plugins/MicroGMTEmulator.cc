@@ -190,7 +190,6 @@ l1t::MicroGMTEmulator::produce(edm::Event& iEvent, const edm::EventSetup& iSetup
 
   // this converts the InputMuon type to the InternalMuon type and splits them into
   // positive / negative eta collections necessary as LUTs may differ for pos / neg.
-
   convertMuons(bmtfMuons, internMuonsBmtf, bmtfWedges);
   splitAndConvertMuons(emtfMuons, internMuonsEmtfPos, internMuonsEmtfNeg, emtfPosWedges, emtfNegWedges);
   splitAndConvertMuons(omtfMuons, internMuonsOmtfPos, internMuonsOmtfNeg, omtfPosWedges, omtfNegWedges);
@@ -341,7 +340,7 @@ l1t::MicroGMTEmulator::splitAndConvertMuons(const edm::Handle<MicroGMTConfigurat
                                             L1TGMTInternalWedges& wedges_neg) const
 {
   // initialize the wedge collections:
-  for (int i = 1; i <= 6; ++i) {
+  for (int i = 0; i < 6; ++i) {
     wedges_pos[i] = std::vector<std::shared_ptr<L1TGMTInternalMuon>>();
     wedges_pos[i].reserve(3);
     wedges_neg[i] = std::vector<std::shared_ptr<L1TGMTInternalMuon>>();
@@ -358,7 +357,7 @@ l1t::MicroGMTEmulator::splitAndConvertMuons(const edm::Handle<MicroGMTConfigurat
       wedges_neg[in->at(i).processor()].push_back(out);
     }
   }
-  for (int i = 1; i <= 12; ++i) {
+  for (int i = 0; i < 6; ++i) {
     if(wedges_pos[i].size() > 3) edm::LogWarning("Input Mismatch") << " too many inputs per processor for emtf+ / omtf+" << std::endl;
     if(wedges_neg[i].size() > 3) edm::LogWarning("Input Mismatch") << " too many inputs per processor for emtf- / omtf-" << std::endl;
   }
@@ -370,7 +369,7 @@ l1t::MicroGMTEmulator::convertMuons(const edm::Handle<MicroGMTConfiguration::Inp
                                     L1TGMTInternalWedges& wedges) const
 {
   // initialize the wedge collection:
-  for (int i = 1; i <= 12; ++i) {
+  for (int i = 0; i < 12; ++i) {
     wedges[i] = std::vector<std::shared_ptr<L1TGMTInternalMuon>>();
     wedges[i].reserve(3);
   }
@@ -379,7 +378,7 @@ l1t::MicroGMTEmulator::convertMuons(const edm::Handle<MicroGMTConfiguration::Inp
     out.emplace_back(outMu);
     wedges[in->at(i).processor()].push_back(outMu);
   }
-  for (int i = 1; i <= 12; ++i) {
+  for (int i = 0; i < 12; ++i) {
     if(wedges[i].size() > 3) edm::LogWarning("Input Mismatch") << " too many inputs per processor for barrel" << std::endl;
   }
 }

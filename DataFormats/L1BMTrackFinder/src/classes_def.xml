@@ -7,7 +7,8 @@
  <class name="L1MuBMChambThDigi" ClassVersion="12">
   <version ClassVersion="12" checksum="2187203304"/>
  </class>
- <class name="L1MuBMTrackCand" ClassVersion="15">
+ <class name="L1MuBMTrackCand" ClassVersion="16">
+  <version ClassVersion="16" checksum="1893751106"/>
   <version ClassVersion="15" checksum="206218574"/>
  </class>
 

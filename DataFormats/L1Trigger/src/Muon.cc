@@ -31,6 +31,23 @@ l1t::Muon::Muon( const LorentzVector& p4,
 
 }
 
+l1t::Muon::Muon( const LorentzVector& p4,
+      int pt,
+      int eta,
+      int phi,
+      int qual,
+      int charge,
+      int chargeValid,
+      int something,
+      int iso,
+      int tag) : L1Candidate(p4, pt, eta, phi, qual, iso),
+    hwCharge_(charge),
+    hwChargeValid_(chargeValid),
+    hwTag_(tag) {
+      hwDEtaExtra_ = something;
+
+}
+
 l1t::Muon::Muon( const PolarLorentzVector& p4,
     const RegionalRef& origin,
     int pt,
