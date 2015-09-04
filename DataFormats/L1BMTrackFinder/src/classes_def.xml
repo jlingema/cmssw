@@ -1,0 +1,33 @@
+
+<lcgdict>
+
+ <class name="L1MuBMChambPhDigi" ClassVersion="12">
+  <version ClassVersion="12" checksum="4083972864"/>
+ </class>
+ <class name="L1MuBMChambThDigi" ClassVersion="12">
+  <version ClassVersion="12" checksum="2187203304"/>
+ </class>
+ <class name="L1MuBMTrackCand" ClassVersion="15">
+  <version ClassVersion="15" checksum="206218574"/>
+ </class>
+
+ <class name="std::vector<L1MuBMChambPhDigi>"/>
+ <class name="std::vector<L1MuBMChambThDigi>"/>
+ <class name="std::vector<L1MuBMTrackCand>"/>
+
+ <class name="L1MuBMChambPhContainer" ClassVersion="12">
+  <version ClassVersion="12" checksum="3216844526"/>
+ </class>
+ <class name="L1MuBMChambThContainer" ClassVersion="12">
+  <version ClassVersion="12" checksum="4203002518"/>
+ </class>
+ <class name="L1MuBMTrackContainer" ClassVersion="12">
+  <version ClassVersion="12" checksum="3579623934"/>
+ </class>
+
+ <class name="edm::Wrapper<L1MuBMChambPhContainer>" splitLevel="0"/>
+ <class name="edm::Wrapper<L1MuBMChambThContainer>" splitLevel="0"/>
+ <class name="edm::Wrapper<L1MuBMTrackContainer>"/>
+
+</lcgdict>
+
