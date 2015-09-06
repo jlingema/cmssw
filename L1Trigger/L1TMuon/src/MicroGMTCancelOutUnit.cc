@@ -45,7 +45,7 @@ MicroGMTCancelOutUnit::setCancelOutBits(L1TGMTInternalWedges& wedges, tftype tra
       coll1.push_back(mu);
     }
     // handle wrap around: max "wedge" has to be compared to first "wedge"
-    int neighbourWedge = currentWedge % maxWedges;
+    int neighbourWedge = (currentWedge + 1) % maxWedges;
     for (auto mu : wedges.at(neighbourWedge)) {
       coll2.push_back(mu);
     }
