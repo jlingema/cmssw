@@ -56,7 +56,9 @@ using namespace std;
 // Constructors --
 //----------------
 
-L1MuBMTrackFinder::L1MuBMTrackFinder(const edm::ParameterSet & ps,edm::ConsumesCollector && iC) {
+L1MuBMTrackFinder::L1MuBMTrackFinder(const edm::ParameterSet & ps,edm::ConsumesCollector && iC) :
+  _cache(36, -9, 8)
+{
 
   // set configuration parameters
   if ( m_config == 0 ) m_config = new L1MuBMTFConfig(ps);
@@ -254,7 +256,9 @@ void L1MuBMTrackFinder::run(const edm::Event& e, const edm::EventSetup& c) {
 //                                                               (*iter)->bx()
 //                                                               ));
 //
-        if ( *iter ){ _cache.push_back((*iter)->bx(), l1t::RegionalMuonCand( (*iter)->hwPt(),
+
+        if ( *iter ){
+          _cache.push_back((*iter)->bx(), l1t::RegionalMuonCand( (*iter)->hwPt(),
                                                                (*iter)->hwPhi(),
                                                                (*iter)->hwEta(),
                                                                (*iter)->hwSign(),

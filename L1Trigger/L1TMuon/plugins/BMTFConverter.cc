@@ -137,17 +137,22 @@ BMTFConverter::produce(edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   Handle<l1t::RegionalMuonCandBxCollection> bmtfMuons;
   iEvent.getByToken(m_barrelTfInputToken, bmtfMuons);
-  for (auto mu = bmtfMuons->begin(0); mu != bmtfMuons->end(0); ++mu) {
-    l1t::RegionalMuonCand convMu((*mu));
-    // int convPt = ptMap_.at(mu->hwPt());
-    // int convPhi = (mu->hwPhi() * 4) - (mu->processor() * 48);
-    // int convEta = getSigned(mu->hwEta())*3.54;
-    int convEta = (mu->hwEta() - 32)*3.54;
-    // convMu.setHwPt(convPt);
-    // convMu.setHwPhi(convPhi);
-    convMu.setHwEta(convEta);
-    // convMu.setTFIdentifiers(mu->processor()+1, mu->trackFinderType());
-    convMuons->push_back(0, convMu);
+  int minBX = bmtfMuons->getFirstBX();
+  int maxBX = bmtfMuons->getLastBX();
+  for (int bx = minBX; bx <= maxBX; ++bx) {
+    for (auto mu = bmtfMuons->begin(bx); mu != bmtfMuons->end(bx); ++mu) {
+      // if (bx != 0) { std::cout << "found bmtf in bx " << bx << std::endl; }
+      l1t::RegionalMuonCand convMu((*mu));
+      // int convPt = ptMap_.at(mu->hwPt());
+      // int convPhi = (mu->hwPhi() * 4) - (mu->processor() * 48);
+      // int convEta = getSigned(mu->hwEta())*3.54;
+      int convEta = (mu->hwEta() - 32)*3.54;
+      // convMu.setHwPt(convPt);
+      // convMu.setHwPhi(convPhi);
+      convMu.setHwEta(convEta);
+      // convMu.setTFIdentifiers(mu->processor()+1, mu->trackFinderType());
+      convMuons->push_back(0, convMu);
+    }
   }
 
   iEvent.put(convMuons, "ConvBMTFMuons");

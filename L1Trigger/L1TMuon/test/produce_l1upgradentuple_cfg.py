@@ -9,9 +9,9 @@ process.load("FWCore.MessageLogger.MessageLogger_cfi")
 
 VERBOSE = False
 SAMPLE = "zmumu"  # "relval"##"minbias"
-EDM_OUT = True
+EDM_OUT = False
 # min bias: 23635 => 3477 passed L1TMuonFilter (~6.7%), zmumu ~84%
-NEVENTS = 50
+NEVENTS = 1000
 if VERBOSE:
     process.MessageLogger = cms.Service("MessageLogger",
                                         suppressInfo=cms.untracked.vstring('AfterSource', 'PostModule'),
@@ -112,10 +112,13 @@ process.uGMTCaloInputProducer = cms.EDProducer("l1t::uGMTCaloInputProducer",
 )
 # WORKAROUNDS FOR WRONG SCALES / MISSING COLLECTIONS:
 process.bmtfConverter = cms.EDProducer("l1t::BMTFConverter",)
+process.tfQualFilter = cms.EDProducer("l1t::TrackFinderQualityFilter",)
 
 # Adjust input tags if running on GEN-SIM-RAW (have to re-digi)
 if SAMPLE == "zmumu" or SAMPLE == "minbias":
     process.L1TMuonTriggerPrimitives.CSC.src = cms.InputTag('simCscTriggerPrimitiveDigis')
+    process.bmtfEmulator.DTDigi_Source = cms.InputTag("dttfDigis")
+    process.bmtfEmulator.CSCStub_Source = cms.InputTag("csctfDigis", "DT")
 
 process.L1MuonFilter = cms.EDFilter("SelectL1Muons",)
 process.GenMuonFilter = cms.EDFilter("SelectGenMuons",)
@@ -128,9 +131,9 @@ process.load("L1TriggerDPG.L1Ntuples.l1MuonUpgradeTreeProducer_cfi")
 
 process.load("L1Trigger.L1TMuon.microgmtemulator_cfi")
 
-process.microGMTEmulator.overlapTFInput = cms.InputTag("omtfEmulator", "OMTF")
+process.microGMTEmulator.overlapTFInput = cms.InputTag("tfQualFilter", "OMTF")
 process.l1MuonUpgradeTreeProducer.omtfTag = cms.InputTag("omtfEmulator", "OMTF")
-process.microGMTEmulator.forwardTFInput = cms.InputTag("L1TMuonEndcapTrackFinder", "EMUTF")
+process.microGMTEmulator.forwardTFInput = cms.InputTag("tfQualFilter", "EMTF")
 process.l1MuonUpgradeTreeProducer.emtfTag = cms.InputTag("L1TMuonEndcapTrackFinder", "EMUTF")
 process.microGMTEmulator.barrelTFInput = cms.InputTag("bmtfConverter", "ConvBMTFMuons")
 process.l1MuonUpgradeTreeProducer.bmtfTag = cms.InputTag("bmtfConverter", "ConvBMTFMuons")
@@ -177,7 +180,8 @@ process.l1NtupleProducer.ecalSource = cms.InputTag("none")
 process.l1NtupleProducer.hcalSource = cms.InputTag("none")
 process.l1NtupleProducer.csctfTrkSource = cms.InputTag("none")
 process.l1NtupleProducer.csctfLCTSource = cms.InputTag("none")
-process.l1NtupleProducer.csctfLCTSource = cms.InputTag("none")
+process.l1NtupleProducer.csctfStatusSource = cms.InputTag("none")
+process.l1NtupleProducer.csctfDTStubsSource = cms.InputTag("none")
 process.l1NtupleProducer.generatorSource = cms.InputTag("genParticles")
 process.l1NtupleProducer.csctfDTStubsSource = cms.InputTag("none")
 
@@ -205,6 +209,7 @@ process.L1TMuonSeq = cms.Sequence(
     + process.bmtfConverter
     + process.omtfEmulator
     + process.L1TMuonEndcapTrackFinder
+    + process.tfQualFilter
     + process.L1TCaloStage2_PPFromRaw
     + process.uGMTCaloInputProducer
     + process.microGMTEmulator

@@ -19,6 +19,8 @@
 
 #include "DataFormats/L1DTTrackFinder/interface/L1MuDTChambPhContainer.h"
 #include "DataFormats/L1DTTrackFinder/interface/L1MuDTChambThContainer.h"
+#include "DataFormats/L1CSCTrackFinder/interface/TrackStub.h"
+#include "DataFormats/L1CSCTrackFinder/interface/CSCTriggerContainer.h"
 #include "DataFormats/L1BMTrackFinder/interface/L1MuBMTrackContainer.h"
 //#include <DataFormats/L1GlobalMuonTrigger/interface/L1MuRegionalCand.h>
 
@@ -32,13 +34,15 @@
 using namespace std;
 
 BMTrackFinder::BMTrackFinder(const edm::ParameterSet & pset) {
+  consumes<L1MuDTChambPhContainer>(pset.getParameter<edm::InputTag>("DTDigi_Source"));
+  consumes<L1MuDTChambThContainer>(pset.getParameter<edm::InputTag>("DTDigi_Source"));
+  consumes<CSCTriggerContainer<csctf::TrackStub> >(pset.getParameter<edm::InputTag>("CSCStub_Source"));
 
   produces<L1MuBMTrackContainer>("BMTF");
   //produces<vector<L1MuRegionalCand> >("BM"); -->
   produces<l1t::RegionalMuonCandBxCollection>("BM");
 
-
-  setup1 = new L1MuBMTFSetup(pset,consumesCollector());
+  setup1 = new L1MuBMTFSetup(pset, consumesCollector());
   usesResource("BMTrackFinder");
 }
 
